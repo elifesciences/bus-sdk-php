@@ -41,8 +41,15 @@ do
   # May want to add support for specifying PHP path
   # Tosses out regular output, we only care about errors.
   currLint=`php -l ${entry} 2>&1 1>/dev/null`
+  # Check for Linting issues.
   if [[ ${#currLint} == 0 ]]; then
     ((filesPassed++))
+    if exists php-cs-fixer ; then
+      # Run CS Fixer
+      php-cs-fixer fix ${entry} 2>&1 1>/dev/null
+      # Remove empty change.
+      git checkout -- ${entry}
+    fi
   else
     echo -e "Failed: ${entry}" | error
     echo -e "${currLint}\n" | error
