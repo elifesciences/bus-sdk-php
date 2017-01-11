@@ -1,8 +1,7 @@
 <?php
 
 $finder = Symfony\CS\Finder\DefaultFinder::create()
-    ->exclude('pattern-library')
-    ->name('update')
+    ->in(__DIR__)
 ;
 
 return Symfony\CS\Config\Config::create()

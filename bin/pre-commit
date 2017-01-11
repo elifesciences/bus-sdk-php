@@ -5,24 +5,27 @@ SE=0
 success() {
   read message;
   echo -e -n "\033[32m  ✔ "
-  echo $message;
+  echo ${message};
   echo -e -n "\033[39m"
 }
 
 title() {
   read message;
   echo -e -n "\033[33m ====> "
-  echo $message;
+  echo ${message};
   echo -e -n "\033[39m"
 }
 
 error() {
   read message;
   echo -e -n "\033[31m  ✗ "
-  echo $message;
+  echo ${message};
   echo -e -n "\033[39m"
 }
 
+exists() {
+    type "$1" > /dev/null 2>&1
+}
 # PHP linting
 echo -n "Checking PHP files" | title
 
@@ -67,7 +70,6 @@ echo -n "Running unit tests" | title
 
 phpunit --colors 2>&1 1> /tmp/phpunit &
 
-
 # Spinner
 pid=$!
 spin='-\|/'
@@ -79,7 +81,6 @@ do
   sleep .1
 done
 printf "\r";
-
 
 RESULT=$( cat /tmp/phpunit );
 

@@ -5,6 +5,8 @@ function real_path { echo $(cd $(dirname $1); pwd)/$(basename $1); }
 from=$(real_path ./bin/pre-commit)
 target=$(real_path ./.git/hooks/pre-commit)
 
-if [ ! -f ${target} ]; then
+unlink ${target}
+
+#if [ ! -f ${target} ]; then
   ln -s ${from} ${target}
-fi
+#fi
