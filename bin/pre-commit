@@ -68,7 +68,7 @@ echo -e "\n";
 
 echo -n "Running unit tests" | title
 
-phpunit --colors 2>&1 1> /tmp/phpunit &
+./vendor/bin/phpunit --colors 2>&1 1> /tmp/phpunit &
 
 # Spinner
 pid=$!
