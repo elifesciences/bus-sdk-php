@@ -1,0 +1,2 @@
+# To add locally use: `git config filter.phpcsfixer.clean ./bin/filters/clean.php`
+*.php filter=phpcsfixer
