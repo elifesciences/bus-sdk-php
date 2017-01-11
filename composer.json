@@ -2,5 +2,8 @@
     "name": "elife/bus-sdk",
     "description": "eLife Sciences bus SDK",
     "type": "library",
-    "license": "MIT"
+    "license": "MIT",
+    "require": {
+        "phpunit/phpunit": "^5.7"
+    }
 }
