@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+function realpath { echo $(cd $(dirname $1); pwd)/$(basename $1); }
+
+from=$(realpath ./bin/pre-commit)
+target=$(realpath ./.git/hooks/pre-commit)
+
+if [ ! -f ${target} ]; then
+  ln -s ${from} ${target}
+fi

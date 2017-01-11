@@ -5,5 +5,9 @@
     "license": "MIT",
     "require": {
         "phpunit/phpunit": "^5.7"
+    },
+    "scripts": {
+        "post-install-cmd": "./bin/build-hook",
+        "post-update-cmd": "./bin/build-hook"
     }
 }
