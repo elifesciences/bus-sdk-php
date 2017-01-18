@@ -6,6 +6,7 @@
     "require": {
         "elife/api-sdk": "dev-master",
         "elife/api": "dev-master",
+        "elife/logging-sdk": "dev-master",
         "aws/aws-sdk-php": "^3.19",
         "jms/serializer": "^1.4",
         "psr/log": "1.0.*"
