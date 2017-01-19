@@ -239,8 +239,20 @@
             "install-path": "vendor/seld/jsonlint",
             "installer": "composer"
         },
+        "symfony/console": {
+            "install-path": "vendor/symfony/console",
+            "installer": "composer"
+        },
+        "symfony/debug": {
+            "install-path": "vendor/symfony/debug",
+            "installer": "composer"
+        },
         "symfony/filesystem": {
             "install-path": "vendor/symfony/filesystem",
+            "installer": "composer"
+        },
+        "symfony/polyfill-mbstring": {
+            "install-path": "vendor/symfony/polyfill-mbstring",
             "installer": "composer"
         },
         "symfony/process": {
