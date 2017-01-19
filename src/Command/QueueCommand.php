@@ -40,10 +40,7 @@ abstract class QueueCommand extends Command
         parent::__construct(null);
     }
 
-    /**
-     * @implementation
-     */
-    abstract protected function process(QueueItem $item);
+    abstract protected function process(InputInterface $input, QueueItem $item);
 
     protected function configure()
     {
@@ -53,21 +50,18 @@ abstract class QueueCommand extends Command
             ->addOption('drop', 'd', InputOption::VALUE_NONE);
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    final public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->logger->info('queue:watch: Started listening.');
-        $this->monitoring->nameTransaction('queue:watch');
+        $this->logger->info($this->getName().' Started listening.');
+        $this->monitoring->nameTransaction($this->getName());
         // Loop.
         $limit = $this->limit;
         while (!$limit()) {
             $this->loop($input);
         }
-        $this->logger->info('queue:watch: Stopped because of limits reached.');
+        $this->logger->info($this->getName().' Stopped because of limits reached.');
     }
 
-    /**
-     * @shared
-     */
     public function transform(QueueItem $item)
     {
         $entity = null;
@@ -76,7 +70,7 @@ abstract class QueueCommand extends Command
             $entity = $this->transformer->transform($item);
         } catch (BadResponse $e) {
             // We got a 404 or server error.
-            $this->logger->error("queue:watch: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
+            $this->logger->error("{$this->getName()}: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
                 'exception' => $e,
                 'item' => $item,
             ]);
@@ -84,7 +78,7 @@ abstract class QueueCommand extends Command
             $this->queue->commit($item);
         } catch (Throwable $e) {
             // Unknown error.
-            $this->logger->error("queue:watch: There was an unknown problem importing {$item->getType()} ({$item->getId()})", [
+            $this->logger->error("{$this->getName()}: There was an unknown problem importing {$item->getType()} ({$item->getId()})", [
                 'exception' => $e,
                 'item' => $item,
             ]);
@@ -96,20 +90,17 @@ abstract class QueueCommand extends Command
         return $entity;
     }
 
-    /**
-     * @shared
-     */
-    public function loop(InputInterface $input)
+    final private function loop(InputInterface $input)
     {
-        $this->logger->debug('queue:watch: Loop start, listening to queue', ['queue' => $this->topic]);
+        $this->logger->debug($this->getName().' Loop start, listening to queue', ['queue' => $this->topic]);
         $item = $this->queue->dequeue();
         if ($item) {
             $this->monitoring->startTransaction();
             if ($entity = $this->transform($item)) {
-                $this->process($item);
+                $this->process($input, $item);
             }
             $this->monitoring->endTransaction();
         }
-        $this->logger->debug('queue:watch: End of loop');
+        $this->logger->debug($this->getName().' End of loop');
     }
 }
