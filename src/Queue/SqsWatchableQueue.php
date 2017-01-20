@@ -11,9 +11,11 @@ final class SqsWatchableQueue implements WatchableQueue
     private $url;
     private $pollingTimeout = 20;
     private $visibilityTimeout = 10;
+    private $name;
 
     public function __construct(SqsClient $client, string $name)
     {
+        $this->name = $name;
         $this->client = $client;
         $this->url = $client->getQueueUrl(['QueueName' => $name])->get('QueueUrl');
     }
@@ -104,5 +106,10 @@ final class SqsWatchableQueue implements WatchableQueue
         }
 
         return $total;
+    }
+
+    public function __toString() : string
+    {
+        return $this->name;
     }
 }
