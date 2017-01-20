@@ -26,16 +26,14 @@ abstract class QueueCommand extends Command
     protected $transformer;
     protected $limit;
     protected $monitoring;
-    protected $topic;
 
-    public function __construct(string $topic, LoggerInterface $logger, WatchableQueue $queue, QueueItemTransformer $transformer, Monitoring $monitoring, callable $limit)
+    public function __construct(LoggerInterface $logger, WatchableQueue $queue, QueueItemTransformer $transformer, Monitoring $monitoring, callable $limit)
     {
         $this->logger = $logger;
         $this->queue = $queue;
         $this->monitoring = $monitoring;
         $this->transformer = $transformer;
         $this->limit = $limit;
-        $this->topic = $topic;
 
         parent::__construct(null);
     }
@@ -92,7 +90,7 @@ abstract class QueueCommand extends Command
 
     final private function loop(InputInterface $input)
     {
-        $this->logger->debug($this->getName().' Loop start, listening to queue', ['queue' => $this->topic]);
+        $this->logger->debug($this->getName().' Loop start, listening to queue', ['queue' => (string) $this->queue]);
         $item = $this->queue->dequeue();
         if ($item) {
             $this->monitoring->startTransaction();
