@@ -15,7 +15,6 @@ use eLife\Logging\Monitoring;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -44,8 +43,7 @@ abstract class QueueCommand extends Command
     {
         $this
             ->setName('queue:watch')
-            ->setDescription('Watches SQS for changes to articles, ')
-            ->addOption('drop', 'd', InputOption::VALUE_NONE);
+            ->setDescription('Watches SQS for changes to articles, ');
     }
 
     final public function execute(InputInterface $input, OutputInterface $output)
