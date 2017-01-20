@@ -49,11 +49,11 @@ trait BasicTransformer
         }
     }
 
-    public function transform(QueueItem $item, bool $asJson = true)
+    public function transform(QueueItem $item, bool $serialized = true)
     {
         $sdk = $this->getSdk($item);
         $entity = $sdk->get($item->getId())->wait(true);
-        if ($asJson === false) {
+        if ($serialized === false) {
             return $entity;
         }
 
