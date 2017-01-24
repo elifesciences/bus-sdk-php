@@ -41,6 +41,10 @@
             "install-path": "vendor/elife/api-sdk",
             "installer": "composer"
         },
+        "elife/logging-sdk": {
+            "install-path": "vendor/elife/logging-sdk",
+            "installer": "composer"
+        },
         "guzzlehttp/guzzle": {
             "install-path": "vendor/guzzlehttp/guzzle",
             "installer": "composer"
@@ -69,6 +73,10 @@
             "install-path": "vendor/justinrainbow/json-schema",
             "installer": "composer"
         },
+        "monolog/monolog": {
+            "install-path": "vendor/monolog/monolog",
+            "installer": "composer"
+        },
         "mtdowling/jmespath.php": {
             "install-path": "vendor/mtdowling/jmespath.php",
             "installer": "composer"
@@ -77,6 +85,10 @@
             "install-path": "vendor/myclabs/deep-copy",
             "installer": "composer",
             "env": "dev"
+        },
+        "ocramius/package-versions": {
+            "install-path": "vendor/ocramius/package-versions",
+            "installer": "composer"
         },
         "paragonie/random_compat": {
             "install-path": "vendor/paragonie/random_compat",
@@ -227,8 +239,20 @@
             "install-path": "vendor/seld/jsonlint",
             "installer": "composer"
         },
+        "symfony/console": {
+            "install-path": "vendor/symfony/console",
+            "installer": "composer"
+        },
+        "symfony/debug": {
+            "install-path": "vendor/symfony/debug",
+            "installer": "composer"
+        },
         "symfony/filesystem": {
             "install-path": "vendor/symfony/filesystem",
+            "installer": "composer"
+        },
+        "symfony/polyfill-mbstring": {
+            "install-path": "vendor/symfony/polyfill-mbstring",
             "installer": "composer"
         },
         "symfony/process": {

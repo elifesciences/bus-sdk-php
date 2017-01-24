@@ -32,4 +32,6 @@ interface WatchableQueue extends Countable
      * Deletes everything from the queue.
      */
     public function clean();
+
+    public function __toString() : string;
 }
