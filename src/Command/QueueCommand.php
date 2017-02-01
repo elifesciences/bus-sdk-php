@@ -25,14 +25,22 @@ abstract class QueueCommand extends Command
     protected $transformer;
     protected $limit;
     protected $monitoring;
+    private $serializedTransform;
 
-    public function __construct(LoggerInterface $logger, WatchableQueue $queue, QueueItemTransformer $transformer, Monitoring $monitoring, callable $limit)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        WatchableQueue $queue,
+        QueueItemTransformer $transformer,
+        Monitoring $monitoring,
+        callable $limit,
+        bool $serializedTransform = true
+    ) {
         $this->logger = $logger;
         $this->queue = $queue;
         $this->monitoring = $monitoring;
         $this->transformer = $transformer;
         $this->limit = $limit;
+        $this->serializedTransform = $serializedTransform;
 
         parent::__construct(null);
     }
@@ -63,7 +71,7 @@ abstract class QueueCommand extends Command
         $entity = null;
         try {
             // Transform into something for gearman.
-            $entity = $this->transformer->transform($item);
+            $entity = $this->transformer->transform($item, $this->serializedTransform);
         } catch (BadResponse $e) {
             // We got a 404 or server error.
             $this->logger->error("{$this->getName()}: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
