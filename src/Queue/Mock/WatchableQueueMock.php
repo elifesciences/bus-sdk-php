@@ -32,7 +32,7 @@ final class WatchableQueueMock implements WatchableQueue
     public function dequeue()
     {
         if ($this->items === []) {
-            throw new LogicException("You should not reach a dequeue() on an empty queue inside tests");
+            throw new LogicException('You should not reach a dequeue() on an empty queue inside tests');
         }
         $item = array_pop($this->items);
 
