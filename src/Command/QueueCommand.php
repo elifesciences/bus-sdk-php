@@ -103,6 +103,7 @@ abstract class QueueCommand extends Command
             if ($entity = $this->transform($item)) {
                 $this->process($input, $item, $entity);
             }
+            $this->queue->commit($item);
             $this->monitoring->endTransaction();
         }
         $this->logger->debug($this->getName().' End of loop');

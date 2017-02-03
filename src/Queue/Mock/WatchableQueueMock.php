@@ -4,11 +4,12 @@ namespace eLife\Bus\Queue\Mock;
 
 use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\WatchableQueue;
+use LogicException;
 
 final class WatchableQueueMock implements WatchableQueue
 {
     private $items = [];
-    private $process = [];
+    private $invisibleItems = [];
 
     public function __construct(QueueItem ...$items)
     {
@@ -30,9 +31,12 @@ final class WatchableQueueMock implements WatchableQueue
      */
     public function dequeue()
     {
+        if ($this->items === []) {
+            throw new LogicException('You should not reach a dequeue() on an empty queue inside tests');
+        }
         $item = array_pop($this->items);
 
-        return $this->process[$item->getReceipt()] = $item;
+        return $this->invisibleItems[$item->getReceipt()] = $item;
     }
 
     /**
@@ -40,7 +44,7 @@ final class WatchableQueueMock implements WatchableQueue
      */
     public function commit(QueueItem $item)
     {
-        unset($this->process[$item->getReceipt()]);
+        unset($this->invisibleItems[$item->getReceipt()]);
     }
 
     /**
@@ -60,7 +64,7 @@ final class WatchableQueueMock implements WatchableQueue
 
     public function count() : int
     {
-        return count($this->items);
+        return count($this->items) + count($this->invisibleItems);
     }
 
     public function __toString() : string
