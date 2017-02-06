@@ -15,6 +15,8 @@ final class QueueCleanCommand extends Command
 
     public function __construct(WatchableQueue $queue, LoggerInterface $logger)
     {
+        parent::__construct(null);
+
         $this->queue = $queue;
         $this->logger = $logger;
     }

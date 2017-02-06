@@ -13,6 +13,8 @@ final class QueueCountCommand extends Command
 
     public function __construct(WatchableQueue $queue)
     {
+        parent::__construct(null);
+
         $this->queue = $queue;
     }
 
