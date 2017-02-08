@@ -15,18 +15,37 @@ class CachedTransformer implements QueueItemTransformer
     private $lifetime;
     private $sdk;
     private $serializer;
+    private $shouldCache;
 
-    public function __construct(ApiSdk $sdk, Cache $cache, LoggerInterface $logger, int $lifetime)
-    {
+    public function __construct(
+        ApiSdk $sdk,
+        Cache $cache,
+        LoggerInterface $logger,
+        int $lifetime,
+        callable $shouldCache
+    ) {
         $this->serializer = $sdk->getSerializer();
         $this->sdk = $sdk;
         $this->cache = $cache;
         $this->logger = $logger;
         $this->lifetime = $lifetime;
+        $this->shouldCache = $shouldCache;
+    }
+
+    private function shouldCacheEntity(string $type, string $id)
+    {
+        if ($shouldCache = $this->shouldCache) {
+            return $shouldCache($type, $id);
+        }
+
+        return true;
     }
 
     public function get($id, $type)
     {
+        if (!$this->shouldCacheEntity($id, $type)) {
+            return $this->refresh(new InternalSqsMessage($type, $id));
+        }
         $key = $this->getKey($id, $type);
         $this->logger->debug('Fetching from cache', [
             'id' => $id,
@@ -41,6 +60,9 @@ class CachedTransformer implements QueueItemTransformer
     {
         $sdk = $this->getSdk($item);
         $entity = $sdk->get($item->getId())->wait(true);
+        if ($this->shouldCacheEntity($item->getType(), $item->getId()) === false) {
+            return $entity;
+        }
         if ($entity) {
             $this->logger->debug('Saving to cache', [
                 'id' => $item->getId(),
@@ -63,10 +85,10 @@ class CachedTransformer implements QueueItemTransformer
 
     protected function getKeyFromQueueItem(QueueItem $item) : string
     {
-        return static::getKey($item->getId(), $item->getType());
+        return static::getKey($item->getType(), $item->getId());
     }
 
-    public static function getKey(string $id, string $type) : string
+    public static function getKey(string $type, string $id) : string
     {
         return sha1(sha1($id), sha1($type));
     }
