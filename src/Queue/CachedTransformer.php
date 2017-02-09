@@ -4,6 +4,7 @@ namespace eLife\Bus\Queue;
 
 use Doctrine\Common\Cache\Cache;
 use eLife\ApiSdk\ApiSdk;
+use eLife\ApiSdk\Model\Model;
 use Psr\Log\LoggerInterface;
 
 class CachedTransformer implements QueueItemTransformer
@@ -51,7 +52,7 @@ class CachedTransformer implements QueueItemTransformer
                 'key' => $key,
             ]);
             if ($item = $this->cache->fetch($key)) {
-                return $item;
+                return $this->serializer->deserialize($item, Model::class, 'json');
             }
         }
 
@@ -72,7 +73,7 @@ class CachedTransformer implements QueueItemTransformer
             ]);
             $this->cache->save(
                 $this->getKeyFromQueueItem($item),
-                $entity,
+                $this->serializer->serialize($entity, 'json'),
                 $this->lifetime
             );
         } else {
