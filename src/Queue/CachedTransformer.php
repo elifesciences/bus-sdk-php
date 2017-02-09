@@ -43,7 +43,7 @@ class CachedTransformer implements QueueItemTransformer
 
     public function get($id, $type)
     {
-        if (!$this->shouldCacheEntity($id, $type)) {
+        if ($this->shouldCacheEntity($id, $type) === false) {
             return $this->refresh(new InternalSqsMessage($type, $id));
         }
         $key = $this->getKey($id, $type);
