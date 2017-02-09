@@ -22,7 +22,7 @@ class CachedTransformer implements QueueItemTransformer
         Cache $cache,
         LoggerInterface $logger,
         int $lifetime,
-        callable $shouldCache
+        callable $shouldCache = null
     ) {
         $this->serializer = $sdk->getSerializer();
         $this->sdk = $sdk;
