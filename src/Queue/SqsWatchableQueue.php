@@ -100,6 +100,12 @@ final class SqsWatchableQueue implements WatchableQueue
             'AttributeNames' => $attributes,
             'QueueUrl' => $this->url,
         ]);
+
+        // goaws does not implement this attribute
+        if (!array_key_exists('ApproximateNumberOfMessagesDelayed', $result['Attributes'])) {
+            $result['Attributes']['ApproximateNumberOfMessagesDelayed'] = 0;
+        }
+
         $total = 0;
         foreach ($attributes as $attributeName) {
             $total += $result['Attributes'][$attributeName];
