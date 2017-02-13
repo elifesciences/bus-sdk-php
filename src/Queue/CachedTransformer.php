@@ -116,7 +116,7 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
 
     public static function getKey(string $type, string $id) : string
     {
-        return sha1(sha1($id), sha1($type));
+        return sha1("$id:-:$type");
     }
 
     public function transform(QueueItem $item, bool $serialized = true)
