@@ -15,7 +15,12 @@ trait BasicTransformer
 
     public function getSdk(QueueItem $item)
     {
-        switch ($item->getType()) {
+        return $this->getSdkByType($item->getType());
+    }
+
+    public function getSdkByType(string $type)
+    {
+        switch ($type) {
             case 'blog-article':
                 return $this->sdk->blogArticles();
                 break;
@@ -45,8 +50,15 @@ trait BasicTransformer
                 break;
 
             default:
-                throw new LogicException("ApiSDK does not exist for the type `{$item->getType()}`.");
+                throw new LogicException("ApiSDK does not exist for the type `{$type}`.");
         }
+    }
+
+    public function get(string $id, string $type)
+    {
+        $sdk = $this->getSdkByType($type);
+
+        return $sdk->get($id)->wait(true);
     }
 
     public function transform(QueueItem $item, bool $serialized = true)

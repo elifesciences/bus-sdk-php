@@ -5,8 +5,9 @@ namespace eLife\Bus\Queue\Mock;
 use eLife\ApiSdk\ApiSdk;
 use eLife\Bus\Queue\BasicTransformer;
 use eLife\Bus\Queue\QueueItemTransformer;
+use eLife\Bus\Queue\SingleItemRepository;
 
-final class QueueItemTransformerMock implements QueueItemTransformer
+final class QueueItemTransformerMock implements QueueItemTransformer, SingleItemRepository
 {
     use BasicTransformer;
 
