@@ -42,6 +42,15 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
         return true;
     }
 
+    /**
+     * Get single entity.
+     *
+     * This method will return an API SDK item when given an ID and Type.
+     * Implementations may use some sort of caching depending on implementation
+     * details.
+     *
+     * @return mixed
+     */
     public function get(string $id, string $type)
     {
         if ($this->shouldCacheEntity($id, $type)) {
@@ -56,10 +65,18 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
             }
         }
 
-        return $this->refresh(new InternalSqsMessage($type, $id));
+        return $this->getFreshDataWithCache(new InternalSqsMessage($type, $id));
     }
 
-    private function refresh(QueueItem $item)
+    /**
+     * Get fresh data with cache.
+     *
+     * This method call guarantees a fresh copy of them entity in ApiSDK represented
+     * by the QueueItem. If the item should be cached, it will be cached at this point.
+     *
+     * @return mixed
+     */
+    private function getFreshDataWithCache(QueueItem $item)
     {
         $sdk = $this->getSdk($item);
         $entity = $sdk->get($item->getId())->wait(true);
@@ -98,7 +115,7 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
 
     public function transform(QueueItem $item, bool $serialized = true)
     {
-        $entity = $this->refresh($item);
+        $entity = $this->getFreshDataWithCache($item);
         if ($serialized === false) {
             return $entity;
         }
