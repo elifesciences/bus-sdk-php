@@ -46,8 +46,14 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
      * Get single entity.
      *
      * This method will return an API SDK item when given an ID and Type.
-     * Implementations may use some sort of caching depending on implementation
-     * details.
+     * If the item should be cached ($this->shouldCache) then we check to
+     * see if the item is in the cache.
+     *
+     * - If the item IS in the cache we return it, never hitting the ApiSDK.
+     * - If the item IS NOT in the cache but it CAN be cached we request it
+     *   from ApiSDK and cache it (see getFreshDataWithCache())
+     * - If the item IS NOT in the cache and SHOULD NOT be cached, we simply
+     *   query the ApiSDK and return without caching.
      *
      * @return mixed
      */
