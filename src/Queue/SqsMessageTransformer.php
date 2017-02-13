@@ -5,7 +5,7 @@ namespace eLife\Bus\Queue;
 use eLife\ApiSdk\ApiSdk;
 use LogicException;
 
-final class SqsMessageTransformer implements QueueItemTransformer
+final class SqsMessageTransformer implements QueueItemTransformer, SingleItemRepository
 {
     use BasicTransformer;
 

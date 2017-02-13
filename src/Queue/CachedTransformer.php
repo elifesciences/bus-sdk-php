@@ -7,7 +7,7 @@ use eLife\ApiSdk\ApiSdk;
 use eLife\ApiSdk\Model\Model;
 use Psr\Log\LoggerInterface;
 
-class CachedTransformer implements QueueItemTransformer
+class CachedTransformer implements QueueItemTransformer, SingleItemRepository
 {
     use BasicTransformer;
 
@@ -42,7 +42,7 @@ class CachedTransformer implements QueueItemTransformer
         return true;
     }
 
-    public function get($id, $type)
+    public function get(string $id, string $type)
     {
         if ($this->shouldCacheEntity($id, $type)) {
             $key = $this->getKey($id, $type);
@@ -59,7 +59,7 @@ class CachedTransformer implements QueueItemTransformer
         return $this->refresh(new InternalSqsMessage($type, $id));
     }
 
-    public function refresh(QueueItem $item)
+    private function refresh(QueueItem $item)
     {
         $sdk = $this->getSdk($item);
         $entity = $sdk->get($item->getId())->wait(true);
@@ -86,7 +86,7 @@ class CachedTransformer implements QueueItemTransformer
         return $entity;
     }
 
-    protected function getKeyFromQueueItem(QueueItem $item) : string
+    private function getKeyFromQueueItem(QueueItem $item) : string
     {
         return static::getKey($item->getType(), $item->getId());
     }
