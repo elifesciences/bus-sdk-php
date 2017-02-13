@@ -57,13 +57,13 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
      *
      * @return mixed
      */
-    public function get(string $id, string $type)
+    public function get(string $type, string $id)
     {
-        if ($this->shouldCacheEntity($id, $type)) {
-            $key = $this->getKey($id, $type);
+        if ($this->shouldCacheEntity($type, $id)) {
+            $key = $this->getKey($type, $id);
             $this->logger->debug('Fetching from cache', [
-                'id' => $id,
                 'type' => $type,
+                'id' => $id,
                 'key' => $key,
             ]);
             if ($item = $this->cache->fetch($key)) {
@@ -91,8 +91,8 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
         }
         if ($entity) {
             $this->logger->debug('Saving to cache', [
-                'id' => $item->getId(),
                 'type' => $item->getType(),
+                'id' => $item->getId(),
             ]);
             $this->cache->save(
                 $this->getKeyFromQueueItem($item),
@@ -101,8 +101,8 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
             );
         } else {
             $this->logger->debug('404 from SDK', [
-                'id' => $item->getId(),
                 'type' => $item->getType(),
+                'id' => $item->getId(),
             ]);
         }
 
@@ -116,7 +116,7 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
 
     public static function getKey(string $type, string $id) : string
     {
-        return sha1("$id:-:$type");
+        return sha1("$type:-:$id");
     }
 
     public function transform(QueueItem $item, bool $serialized = true)
