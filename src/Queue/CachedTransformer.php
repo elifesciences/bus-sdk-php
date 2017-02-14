@@ -96,7 +96,7 @@ class CachedTransformer implements QueueItemTransformer, SingleItemRepository
             ]);
             $this->cache->save(
                 $this->getKeyFromQueueItem($item),
-                $this->serializer->serialize($entity, 'json'),
+                $this->serializer->serialize($entity, 'json', ['type' => true]),
                 $this->lifetime
             );
         } else {
