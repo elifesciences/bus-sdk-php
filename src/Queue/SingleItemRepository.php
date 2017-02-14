@@ -13,5 +13,5 @@ interface SingleItemRepository
      *
      * @return mixed
      */
-    public function get(string $id, string $type);
+    public function get(string $type, string $id);
 }
