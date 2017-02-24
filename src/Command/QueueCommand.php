@@ -45,6 +45,13 @@ abstract class QueueCommand extends Command
         parent::__construct(null);
     }
 
+    /**
+     * You never need to call commit().
+     * Possible things to do:
+     * - perform work on $item/$entity
+     * - throw an exception in case of error
+     * In both cases the message will be removed. Only if the process crashes the item will be retried later.
+     */
     abstract protected function process(InputInterface $input, QueueItem $item, $entity = null);
 
     protected function configure()
