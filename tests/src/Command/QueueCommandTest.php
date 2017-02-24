@@ -16,10 +16,15 @@ class QueueCommandTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->queue = new WatchableQueueMock();
+        $this->transformer = $this->createMock(QueueItemTransformer::class);
+        $this->transformer
+            ->expects($this->any())
+            ->method('transform')
+            ->will($this->returnValue(['field' => 'value']));
         $this->command = new ApplicationSpecificQueueCommand(
             $this->createMock(LoggerInterface::class),
             $this->queue,
-            $this->createMock(QueueItemTransformer::class),
+            $this->transformer,
             new Monitoring(),
             $this->limitIterations(1)
         );
