@@ -66,7 +66,7 @@ abstract class QueueCommand extends Command
         $this->logger->info($this->getName().' Stopped because of limits reached.');
     }
 
-    public function transform(QueueItem $item)
+    final public function transform(QueueItem $item)
     {
         $entity = null;
         try {
