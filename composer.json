@@ -4,8 +4,7 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "elife/api-sdk": "dev-master",
-        "elife/api": "dev-master",
+        "elife/api-sdk": "dev-puli",
         "elife/logging-sdk": "dev-master",
         "aws/aws-sdk-php": "^3.19",
         "jms/serializer": "^1.4",
@@ -35,5 +34,11 @@
     "scripts": {
         "post-install-cmd": "./bin/build-hook",
         "post-update-cmd": "./bin/build-hook"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:thewilkybarkid/api-sdk-php.git"
+        }
+    ]
 }

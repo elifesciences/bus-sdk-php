@@ -1,6 +1,5 @@
 /build/
 /vendor/
 /cache/
-.puli
 coverage.xml
 composer.lock
