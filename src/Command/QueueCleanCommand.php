@@ -31,6 +31,6 @@ final class QueueCleanCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->logger->info('Cleaning queue: '.$this->queue->__toString());
-        $output->writeln($this->queue->count());
+        $this->queue->clean();
     }
 }
