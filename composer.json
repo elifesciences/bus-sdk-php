@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "elife/api-sdk": "dev-master",
+        "elife/api-sdk": "dev-labs_posts",
         "elife/logging-sdk": "dev-master",
         "aws/aws-sdk-php": "^3.19",
         "jms/serializer": "^1.4",
