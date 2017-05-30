@@ -33,8 +33,8 @@ trait BasicTransformer
                 return $this->sdk->interviews();
                 break;
 
-            case 'labs-experiment':
-                return $this->sdk->labsExperiments();
+            case 'labs-post':
+                return $this->sdk->labsPosts();
                 break;
 
             case 'podcast-episode':
