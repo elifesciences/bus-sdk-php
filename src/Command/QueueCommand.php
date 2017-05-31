@@ -45,6 +45,13 @@ abstract class QueueCommand extends Command
         parent::__construct(null);
     }
 
+    /**
+     * You never need to call commit().
+     * Possible things to do:
+     * - perform work on $item/$entity
+     * - throw an exception in case of error
+     * In both cases the message will be removed. Only if the process crashes the item will be retried later.
+     */
     abstract protected function process(InputInterface $input, QueueItem $item, $entity = null);
 
     protected function configure()
@@ -66,7 +73,7 @@ abstract class QueueCommand extends Command
         $this->logger->info($this->getName().' Stopped because of limits reached.');
     }
 
-    public function transform(QueueItem $item)
+    final public function transform(QueueItem $item)
     {
         $entity = null;
         try {
@@ -102,8 +109,8 @@ abstract class QueueCommand extends Command
             $this->monitoring->startTransaction();
             if ($entity = $this->transform($item)) {
                 $this->process($input, $item, $entity);
+                $this->queue->commit($item);
             }
-            $this->queue->commit($item);
             $this->monitoring->endTransaction();
         }
         $this->logger->debug($this->getName().' End of loop');
