@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/5.2/phpunit.xsd"
-         backupGlobals="false" colors="true" bootstrap="tests/bootstrap.php">
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/5.7/phpunit.xsd"
+         backupGlobals="false" colors="true" bootstrap="vendor/autoload.php">
+
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <!-- Make sure that we handle all dates as UTC even if the system's timezone is not UTC -->
+        <ini name="date.timezone" value="America/Los_Angeles"/>
+    </php>
 
     <testsuites>
-        <testsuite name="eLife Bus SDK Test Suite">
-            <directory>tests/src</directory>
+        <testsuite name="eLife Bus SDK">
+            <directory>test/</directory>
         </testsuite>
     </testsuites>
 

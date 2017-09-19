@@ -2,19 +2,19 @@
 
 namespace eLife\Bus\Limit;
 
-class MemoryLimit implements Limit
+final class MemoryLimit implements Limit
 {
     private $bytes;
     private $actualBytes;
 
-    public static function mb($megabytes) : self
-    {
-        return new self($megabytes * 1024 * 1024);
-    }
-
-    private function __construct($bytes)
+    private function __construct(int $bytes)
     {
         $this->bytes = $bytes;
+    }
+
+    public static function mb(int $megabytes) : self
+    {
+        return new self($megabytes * 1024 * 1024);
     }
 
     public function __invoke() : bool

@@ -1,16 +1,17 @@
 <?php
 
-namespace tests\eLife\Bus\Limit;
+namespace test\eLife\Bus\Limit;
 
 use eLife\Bus\Limit\CompositeLimit;
-use PHPUnit_Framework_TestCase;
+use eLife\Bus\Limit\MockLimit;
+use PHPUnit\Framework\TestCase;
 
-class CompositeLimitTest extends PHPUnit_Framework_TestCase
+final class CompositeLimitTest extends TestCase
 {
     public function test_composite_limit_failure()
     {
-        $fail = new BasicLimitMock(true);
-        $pass = new BasicLimitMock();
+        $fail = new MockLimit(true);
+        $pass = new MockLimit();
         $limit = new CompositeLimit($fail, $pass);
 
         $this->assertTrue($limit());
@@ -20,10 +21,10 @@ class CompositeLimitTest extends PHPUnit_Framework_TestCase
 
     public function test_composite_limit_multiple_failures()
     {
-        $fail = new BasicLimitMock(true, ['failure 1']);
-        $fail2 = new BasicLimitMock(true, ['failure 2']);
-        $fail3 = new BasicLimitMock(true, ['failure 3', 'failure 4']);
-        $pass = new BasicLimitMock();
+        $fail = new MockLimit(true, ['failure 1']);
+        $fail2 = new MockLimit(true, ['failure 2']);
+        $fail3 = new MockLimit(true, ['failure 3', 'failure 4']);
+        $pass = new MockLimit();
         $limit = new CompositeLimit($fail, $fail2, $fail3, $pass);
 
         $this->assertTrue($limit());
@@ -38,8 +39,8 @@ class CompositeLimitTest extends PHPUnit_Framework_TestCase
 
     public function test_composite_limit_pass()
     {
-        $pass = new BasicLimitMock();
-        $pass2 = new BasicLimitMock();
+        $pass = new MockLimit();
+        $pass2 = new MockLimit();
         $limit = new CompositeLimit($pass, $pass2);
 
         $this->assertFalse($limit());

@@ -4,7 +4,7 @@ set -e
 : "${dependencies:?Need to set dependencies environment variable}"
 if [ "$dependencies" = "lowest" ]; then
     composer update --prefer-lowest --no-interaction
-    proofreader src/ tests/
+    proofreader src/ test/
 else
     composer update --no-interaction
 fi

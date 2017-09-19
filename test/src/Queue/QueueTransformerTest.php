@@ -1,13 +1,13 @@
 <?php
 
-namespace tests\eLife\Bus\Queue;
+namespace test\eLife\Bus\Queue;
 
 use eLife\Bus\Queue\SqsMessageTransformer;
 use LogicException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-final class QueueTransformerTest extends PHPUnit_Framework_TestCase
+final class QueueTransformerTest extends TestCase
 {
     /** @var SqsMessageTransformer transformer */
     private $transformer;

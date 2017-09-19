@@ -33,7 +33,7 @@ final class SqsMessageTransformer implements QueueItemTransformer, SingleItemRep
         return new BusSqsMessage($messageId, $body->id ?? $body->number, $body->type, $handle);
     }
 
-    public static function hasItems(array $message)
+    public static function hasItems(array $message) : bool
     {
         // If Messages exists and is not empty.
         return isset($message['Messages']) ? (empty($message['Messages']) ? false : true) : false;

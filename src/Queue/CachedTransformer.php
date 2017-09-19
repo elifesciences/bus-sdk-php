@@ -7,7 +7,7 @@ use eLife\ApiSdk\ApiSdk;
 use eLife\ApiSdk\Model\Model;
 use Psr\Log\LoggerInterface;
 
-class CachedTransformer implements QueueItemTransformer, SingleItemRepository
+final class CachedTransformer implements QueueItemTransformer, SingleItemRepository
 {
     use BasicTransformer;
 

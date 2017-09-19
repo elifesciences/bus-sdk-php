@@ -2,17 +2,26 @@
 
 namespace eLife\Bus\Command;
 
-use eLife\Bus\Monitoring;
+use eLife\Bus\Limit\CallbackLimit;
+use eLife\Bus\Limit\Limit;
 use eLife\Bus\Queue\InternalSqsMessage;
 use eLife\Bus\Queue\Mock\WatchableQueueMock;
 use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\QueueItemTransformer;
+use eLife\Logging\Monitoring;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class QueueCommandTest extends \PHPUnit_Framework_TestCase
+final class QueueCommandTest extends TestCase
 {
+    private $queue;
+    private $transformer;
+    private $command;
+    private $input;
+    private $output;
+
     public function setUp()
     {
         $this->queue = new WatchableQueueMock();
@@ -40,18 +49,18 @@ class QueueCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
     }
 
-    private function limitIterations($number)
+    private function limitIterations(int $number) : Limit
     {
-        $this->iterationCounter = 0;
+        $iterationCounter = 0;
 
-        return function () use ($number) {
-            ++$this->iterationCounter;
-            if ($this->iterationCounter > $number) {
+        return new CallbackLimit(function () use ($number, &$iterationCounter) {
+            ++$iterationCounter;
+            if ($iterationCounter > $number) {
                 return true;
             }
 
             return false;
-        };
+        });
     }
 }
 
