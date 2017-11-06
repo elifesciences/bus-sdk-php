@@ -2,11 +2,11 @@
 
 namespace eLife\Bus\Command;
 
-use eLife\Bus\Monitoring;
 use eLife\Bus\Queue\InternalSqsMessage;
 use eLife\Bus\Queue\Mock\WatchableQueueMock;
 use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\QueueItemTransformer;
+use eLife\Logging\Monitoring;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
