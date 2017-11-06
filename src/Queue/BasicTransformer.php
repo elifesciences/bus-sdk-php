@@ -49,6 +49,10 @@ trait BasicTransformer
                 return $this->sdk->articles();
                 break;
 
+            case 'profile':
+                return $this->sdk->profiles();
+                break;
+
             default:
                 throw new LogicException("ApiSDK does not exist for the type `{$type}`.");
         }
