@@ -2,17 +2,17 @@
 
 namespace eLife\Bus\Limit;
 
-class CompositeLimit implements Limit
+final class CompositeLimit implements Limit
 {
-    public $reasons = [];
-    public $functions = [];
+    private $reasons = [];
+    private $functions = [];
 
     public function __construct(Limit ...$args)
     {
         $this->functions = $args;
     }
 
-    public function __invoke(): bool
+    public function __invoke() : bool
     {
         $limitReached = false;
         foreach ($this->functions as $fn) {
@@ -26,7 +26,7 @@ class CompositeLimit implements Limit
         return $limitReached;
     }
 
-    public function getReasons(): array
+    public function getReasons() : array
     {
         return $this->reasons;
     }

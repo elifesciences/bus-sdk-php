@@ -2,7 +2,7 @@
 
 namespace eLife\Bus\Limit;
 
-class SignalsLimit implements Limit
+final class SignalsLimit implements Limit
 {
     private static $validSignals = [
         'SIGINT' => SIGINT,
@@ -22,26 +22,26 @@ class SignalsLimit implements Limit
         }
     }
 
-    public function onTermination($signal)
-    {
-        $this->reasons[] = "Received signal: $signal";
-        $this->valid = false;
-    }
-
-    public static function stopOn(array $signals): self
+    public static function stopOn(array $signals) : self
     {
         return new static($signals);
     }
 
-    public function __invoke(): bool
+    public function __invoke() : bool
     {
         pcntl_signal_dispatch();
 
         return $this->valid === false;
     }
 
-    public function getReasons(): array
+    public function getReasons() : array
     {
         return $this->reasons;
+    }
+
+    private function onTermination(string $signal)
+    {
+        $this->reasons[] = "Received signal: $signal";
+        $this->valid = false;
     }
 }

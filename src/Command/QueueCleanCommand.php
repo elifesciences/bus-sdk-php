@@ -15,7 +15,7 @@ final class QueueCleanCommand extends Command
 
     public function __construct(WatchableQueue $queue, LoggerInterface $logger)
     {
-        parent::__construct(null);
+        parent::__construct();
 
         $this->queue = $queue;
         $this->logger = $logger;
@@ -25,12 +25,12 @@ final class QueueCleanCommand extends Command
     {
         $this
             ->setName('queue:clean')
-            ->setDescription('Cleans the SQS queue through purging. Asynchronous.');
+            ->setDescription('Cleans the SQS queue through purging.');
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->logger->info('Cleaning queue: '.$this->queue->__toString());
+        $this->logger->info('Cleaning queue: '.$this->queue->getName());
         $this->queue->clean();
     }
 }

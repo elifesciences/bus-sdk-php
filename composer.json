@@ -1,23 +1,8 @@
 {
     "name": "elife/bus-sdk",
-    "description": "eLife Sciences bus SDK",
+    "description": "eLife Sciences Bus SDK",
     "type": "library",
     "license": "MIT",
-    "require": {
-        "elife/api-sdk": "dev-master",
-        "elife/logging-sdk": "dev-master",
-        "aws/aws-sdk-php": "^3.19",
-        "jms/serializer": "^1.4",
-        "doctrine/cache": "^1.6",
-        "psr/log": "1.0.*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^5.7",
-        "symfony/console": "^3.2"
-    },
-    "suggest": {
-        "symfony/console": "To use Command classes"
-    },
     "autoload": {
         "psr-4": {
             "eLife\\Bus\\": "./src"
@@ -25,14 +10,33 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "eLife\\Bus\\": "./src",
-            "tests\\eLife\\Bus\\": "./tests/src"
+            "test\\eLife\\Bus\\": "./test/src"
         }
+    },
+    "require": {
+        "php": "^7.0",
+        "aws/aws-sdk-php": "^3.19",
+        "doctrine/cache": "^1.6",
+        "elife/api-sdk": "^1.0",
+        "elife/logging-sdk": "^1.0",
+        "jms/serializer": "^1.4",
+        "psr/log": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7 || ^6.0",
+        "symfony/console": "^2.7 || ^3.2"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "scripts": {
-        "post-install-cmd": "./bin/build-hook",
-        "post-update-cmd": "./bin/build-hook"
+    "suggest": {
+        "symfony/console": "^2.7 || ^3.2, to use Command classes"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
     }
 }

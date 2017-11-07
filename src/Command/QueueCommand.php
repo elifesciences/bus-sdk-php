@@ -1,13 +1,9 @@
 <?php
-/**
- * Queue command.
- *
- * For listening to SQS.
- */
 
 namespace eLife\Bus\Command;
 
 use eLife\ApiClient\Exception\BadResponse;
+use eLife\Bus\Limit\Limit;
 use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\QueueItemTransformer;
 use eLife\Bus\Queue\WatchableQueue;
@@ -32,7 +28,7 @@ abstract class QueueCommand extends Command
         WatchableQueue $queue,
         QueueItemTransformer $transformer,
         Monitoring $monitoring,
-        callable $limit,
+        Limit $limit,
         bool $serializedTransform = true
     ) {
         $this->logger = $logger;
@@ -42,7 +38,7 @@ abstract class QueueCommand extends Command
         $this->limit = $limit;
         $this->serializedTransform = $serializedTransform;
 
-        parent::__construct(null);
+        parent::__construct();
     }
 
     /**
@@ -58,22 +54,20 @@ abstract class QueueCommand extends Command
     {
         $this
             ->setName('queue:watch')
-            ->setDescription('Watches SQS for changes to articles, ');
+            ->setDescription('Watches SQS for changes.');
     }
 
     final public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->logger->info($this->getName().' Started listening.');
         $this->monitoring->nameTransaction($this->getName());
-        // Loop.
-        $limit = $this->limit;
-        while (!$limit()) {
+        while (!call_user_func($this->limit)) {
             $this->loop($input);
         }
         $this->logger->info($this->getName().' Stopped because of limits reached.');
     }
 
-    final public function transform(QueueItem $item)
+    final protected function transform(QueueItem $item)
     {
         $entity = null;
         try {
@@ -101,9 +95,9 @@ abstract class QueueCommand extends Command
         return $entity;
     }
 
-    final private function loop(InputInterface $input)
+    private function loop(InputInterface $input)
     {
-        $this->logger->debug($this->getName().' Loop start, listening to queue', ['queue' => (string) $this->queue]);
+        $this->logger->debug($this->getName().' Loop start, listening to queue', ['queue' => $this->queue->getName()]);
         $item = $this->queue->dequeue();
         if ($item) {
             $this->monitoring->startTransaction();

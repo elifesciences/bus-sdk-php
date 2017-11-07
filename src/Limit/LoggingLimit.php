@@ -4,7 +4,7 @@ namespace eLife\Bus\Limit;
 
 use Psr\Log\LoggerInterface;
 
-class LoggingMiddleware implements Limit
+final class LoggingLimit implements Limit
 {
     private $limit;
     private $logger;
@@ -16,7 +16,7 @@ class LoggingMiddleware implements Limit
         $this->logger = $logger;
     }
 
-    public function __invoke(): bool
+    public function __invoke() : bool
     {
         $limit = $this->limit;
         $limitReached = $limit();
@@ -30,7 +30,7 @@ class LoggingMiddleware implements Limit
         return $limitReached;
     }
 
-    public function getReasons(): array
+    public function getReasons() : array
     {
         return $this->reasons;
     }
