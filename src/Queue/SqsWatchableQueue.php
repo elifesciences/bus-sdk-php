@@ -102,7 +102,7 @@ final class SqsWatchableQueue implements WatchableQueue
         ]);
         $total = 0;
         foreach ($attributes as $attributeName) {
-            $total += $result['Attributes'][$attributeName];
+            $total += $result['Attributes'][$attributeName] ?? 0;
         }
 
         return $total;
