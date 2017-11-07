@@ -27,11 +27,19 @@ final class SignalsLimit implements Limit
         return new static($signals);
     }
 
-    public function __invoke() : bool
+    public function hasBeenReached() : bool
     {
         pcntl_signal_dispatch();
 
         return $this->valid === false;
+    }
+
+    /**
+     * @deprecated  use hasBeenReached() instead
+     */
+    public function __invoke() : bool
+    {
+        return $this->hasBeenReached();
     }
 
     public function getReasons() : array

@@ -18,9 +18,17 @@ final class MockLimit implements Limit
         $this->messages = $messages;
     }
 
-    public function __invoke() : bool
+    public function hasBeenReached() : bool
     {
         return $this->fail;
+    }
+
+    /**
+     * @deprecated  use hasBeenReached() instead
+     */
+    public function __invoke() : bool
+    {
+        return $this->hasBeenReached();
     }
 
     public function getReasons() : array

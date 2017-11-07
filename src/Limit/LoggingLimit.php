@@ -16,7 +16,7 @@ final class LoggingLimit implements Limit
         $this->logger = $logger;
     }
 
-    public function __invoke() : bool
+    public function hasBeenReached() : bool
     {
         $limit = $this->limit;
         $limitReached = $limit();
@@ -28,6 +28,14 @@ final class LoggingLimit implements Limit
         }
 
         return $limitReached;
+    }
+
+    /**
+     * @deprecated  use hasBeenReached() instead
+     */
+    public function __invoke() : bool
+    {
+        return $this->hasBeenReached();
     }
 
     public function getReasons() : array

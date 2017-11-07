@@ -12,7 +12,7 @@ final class CompositeLimit implements Limit
         $this->functions = $args;
     }
 
-    public function __invoke() : bool
+    public function hasBeenReached() : bool
     {
         $limitReached = false;
         foreach ($this->functions as $fn) {
@@ -24,6 +24,14 @@ final class CompositeLimit implements Limit
         }
 
         return $limitReached;
+    }
+
+    /**
+     * @deprecated  use hasBeenReached() instead
+     */
+    public function __invoke() : bool
+    {
+        return $this->hasBeenReached();
     }
 
     public function getReasons() : array
