@@ -108,7 +108,7 @@ final class SqsWatchableQueue implements WatchableQueue
         return $total;
     }
 
-    public function __toString() : string
+    public function getName() : string
     {
         return $this->name;
     }

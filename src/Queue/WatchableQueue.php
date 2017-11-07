@@ -14,7 +14,7 @@ interface WatchableQueue extends Countable
     /**
      * Gets an item to process.
      *
-     * @return QueueItem|null TODO: nullable return type if on PHP 7.1 in the future
+     * @return QueueItem|null
      */
     public function dequeue();
 
@@ -33,5 +33,5 @@ interface WatchableQueue extends Countable
      */
     public function clean();
 
-    public function __toString() : string;
+    public function getName() : string;
 }

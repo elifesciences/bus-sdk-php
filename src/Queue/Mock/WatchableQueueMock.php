@@ -67,7 +67,7 @@ final class WatchableQueueMock implements WatchableQueue
         return count($this->items) + count($this->invisibleItems);
     }
 
-    public function __toString() : string
+    public function getName() : string
     {
         return 'mocked-queue';
     }
