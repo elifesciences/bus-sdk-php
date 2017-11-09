@@ -18,10 +18,9 @@ final class LoggingLimit implements Limit
 
     public function hasBeenReached() : bool
     {
-        $limit = $this->limit;
-        $limitReached = $limit();
+        $limitReached = $this->limit->hasBeenReached();
         if ($limitReached) {
-            $this->reasons = $limit->getReasons();
+            $this->reasons = $this->limit->getReasons();
             foreach ($this->reasons as $reason) {
                 $this->logger->info($reason);
             }

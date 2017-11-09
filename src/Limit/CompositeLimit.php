@@ -5,20 +5,20 @@ namespace eLife\Bus\Limit;
 final class CompositeLimit implements Limit
 {
     private $reasons = [];
-    private $functions = [];
+    private $limits = [];
 
     public function __construct(Limit ...$args)
     {
-        $this->functions = $args;
+        $this->limits = $args;
     }
 
     public function hasBeenReached() : bool
     {
         $limitReached = false;
-        foreach ($this->functions as $fn) {
-            $failure = $fn();
+        foreach ($this->limits as $limit) {
+            $failure = $limit->hasBeenReached();
             if ($failure) {
-                $this->reasons = array_merge($this->reasons, $fn->getReasons());
+                $this->reasons = array_merge($this->reasons, $limit->getReasons());
                 $limitReached = true;
             }
         }
