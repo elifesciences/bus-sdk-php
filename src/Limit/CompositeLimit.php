@@ -5,25 +5,35 @@ namespace eLife\Bus\Limit;
 final class CompositeLimit implements Limit
 {
     private $reasons = [];
-    private $functions = [];
+    private $limits = [];
 
     public function __construct(Limit ...$args)
     {
-        $this->functions = $args;
+        $this->limits = $args;
     }
 
-    public function __invoke() : bool
+    public function hasBeenReached() : bool
     {
         $limitReached = false;
-        foreach ($this->functions as $fn) {
-            $failure = $fn();
+        foreach ($this->limits as $limit) {
+            $failure = $limit->hasBeenReached();
             if ($failure) {
-                $this->reasons = array_merge($this->reasons, $fn->getReasons());
+                $this->reasons = array_merge($this->reasons, $limit->getReasons());
                 $limitReached = true;
             }
         }
 
         return $limitReached;
+    }
+
+    /**
+     * @deprecated  use hasBeenReached() instead
+     */
+    public function __invoke() : bool
+    {
+        error_log('Using '.__CLASS__.' as a callable is deprecated. Use CallbackLimit:: hasBeenReached() instead.', E_USER_ERROR);
+
+        return $this->hasBeenReached();
     }
 
     public function getReasons() : array

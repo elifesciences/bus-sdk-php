@@ -14,7 +14,7 @@ final class CompositeLimitTest extends TestCase
         $pass = new MockLimit();
         $limit = new CompositeLimit($fail, $pass);
 
-        $this->assertTrue($limit());
+        $this->assertTrue($limit->hasBeenReached());
 
         $this->assertEquals(['This is the reason it failed'], $limit->getReasons());
     }
@@ -27,7 +27,7 @@ final class CompositeLimitTest extends TestCase
         $pass = new MockLimit();
         $limit = new CompositeLimit($fail, $fail2, $fail3, $pass);
 
-        $this->assertTrue($limit());
+        $this->assertTrue($limit->hasBeenReached());
 
         $this->assertEquals([
             'failure 1',
@@ -43,7 +43,7 @@ final class CompositeLimitTest extends TestCase
         $pass2 = new MockLimit();
         $limit = new CompositeLimit($pass, $pass2);
 
-        $this->assertFalse($limit());
+        $this->assertFalse($limit->hasBeenReached());
 
         $this->assertEquals([], $limit->getReasons());
     }

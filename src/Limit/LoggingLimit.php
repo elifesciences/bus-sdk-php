@@ -16,18 +16,27 @@ final class LoggingLimit implements Limit
         $this->logger = $logger;
     }
 
-    public function __invoke() : bool
+    public function hasBeenReached() : bool
     {
-        $limit = $this->limit;
-        $limitReached = $limit();
+        $limitReached = $this->limit->hasBeenReached();
         if ($limitReached) {
-            $this->reasons = $limit->getReasons();
+            $this->reasons = $this->limit->getReasons();
             foreach ($this->reasons as $reason) {
                 $this->logger->info($reason);
             }
         }
 
         return $limitReached;
+    }
+
+    /**
+     * @deprecated  use hasBeenReached() instead
+     */
+    public function __invoke() : bool
+    {
+        error_log('Using '.__CLASS__.' as a callable is deprecated. Use CallbackLimit:: hasBeenReached() instead.', E_USER_ERROR);
+
+        return $this->hasBeenReached();
     }
 
     public function getReasons() : array
