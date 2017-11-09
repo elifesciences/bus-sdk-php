@@ -35,6 +35,8 @@ final class LoggingLimit implements Limit
      */
     public function __invoke() : bool
     {
+        error_log('Using '.__CLASS__.' as a callable is deprecated. Use CallbackLimit:: hasBeenReached() instead.', E_USER_ERROR);
+
         return $this->hasBeenReached();
     }
 
