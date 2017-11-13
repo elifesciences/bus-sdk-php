@@ -61,7 +61,7 @@ abstract class QueueCommand extends Command
     {
         $this->logger->info($this->getName().' Started listening.');
         $this->monitoring->nameTransaction($this->getName());
-        while (!call_user_func($this->limit)) {
+        while (!$this->limit->hasBeenReached()) {
             $this->loop($input);
         }
         $this->logger->info($this->getName().' Stopped because of limits reached.');
