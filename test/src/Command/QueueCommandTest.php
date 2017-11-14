@@ -1,7 +1,8 @@
 <?php
 
-namespace eLife\Bus\Command;
+namespace test\eLife\Bus\Command;
 
+use eLife\Bus\Command\QueueCommand;
 use eLife\Bus\Limit\CallbackLimit;
 use eLife\Bus\Limit\Limit;
 use eLife\Bus\Queue\InternalSqsMessage;
@@ -11,19 +12,31 @@ use eLife\Bus\Queue\QueueItemTransformer;
 use eLife\Logging\Monitoring;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * @covers \eLife\Bus\Command\QueueCommand
+ */
 final class QueueCommandTest extends TestCase
 {
-    private $queue;
-    private $transformer;
+    /** @var Application */
+    private $application;
+    /** @var ApplicationSpecificQueueCommand */
     private $command;
-    private $input;
-    private $output;
+    /** @var CommandTester */
+    private $commandTester;
+    private $transformer;
+    /** @var WatchableQueueMock */
+    private $queue;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setup_command()
     {
+        $this->application = new Application();
         $this->queue = new WatchableQueueMock();
         $this->transformer = $this->createMock(QueueItemTransformer::class);
         $this->transformer
@@ -37,15 +50,18 @@ final class QueueCommandTest extends TestCase
             new Monitoring(),
             $this->limitIterations(1)
         );
-        $this->input = $this->createMock(InputInterface::class);
-        $this->output = $this->createMock(OutputInterface::class);
+        $this->application->add($this->command);
+        $this->commandTester = new CommandTester($command = $this->application->get($this->command->getName()));
     }
 
-    public function testDeletesMessagesFromTheQueueAfterProcessing()
+    /**
+     * @test
+     */
+    public function it_will_delete_messages_from_queue_after_processing()
     {
         $message = new InternalSqsMessage('article', '42');
         $this->queue->enqueue($message);
-        $this->command->execute($this->input, $this->output);
+        $this->commandTester->execute(['command' => $this->command->getName()]);
         $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
     }
 

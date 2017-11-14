@@ -7,23 +7,35 @@ use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-final class QueueTransformerTest extends TestCase
+/**
+ * @covers \eLife\Bus\Queue\QueueItemTransformer
+ */
+final class QueueItemTransformerTest extends TestCase
 {
-    /** @var SqsMessageTransformer transformer */
+    /** @var SqsMessageTransformer */
     private $transformer;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setup_queue_transformer()
     {
         $ref = new ReflectionClass(SqsMessageTransformer::class);
         $this->transformer = $ref->newInstanceWithoutConstructor();
     }
 
-    public function test_can_instantiate_with_mock()
+    /**
+     * @test
+     */
+    public function it_can_instantiate_with_mock()
     {
         $this->assertInstanceOf(SqsMessageTransformer::class, $this->transformer);
     }
 
-    public function test_can_transform_sqs_message()
+    /**
+     * @test
+     */
+    public function it_can_transform_sqs_message()
     {
         $message = SqsMessageTransformer::fromMessage([
             'Messages' => [
@@ -40,7 +52,10 @@ final class QueueTransformerTest extends TestCase
         $this->assertEquals($message->getType(), 'blog-article');
         $this->assertEquals($message->getReceipt(), 'very-long-string-thing');
     }
-    public function test_can_transform_sqs_message_failure()
+    /**
+     * @test
+     */
+    public function it_can_transform_sqs_message_failure()
     {
         $this->expectException(LogicException::class);
         SqsMessageTransformer::fromMessage([
