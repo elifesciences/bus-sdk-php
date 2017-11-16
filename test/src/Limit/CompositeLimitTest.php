@@ -6,9 +6,15 @@ use eLife\Bus\Limit\CompositeLimit;
 use eLife\Bus\Limit\MockLimit;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \eLife\Bus\Limit\CompositeLimit
+ */
 final class CompositeLimitTest extends TestCase
 {
-    public function test_composite_limit_failure()
+    /**
+     * @test
+     */
+    public function it_can_fail()
     {
         $fail = new MockLimit(true);
         $pass = new MockLimit();
@@ -19,7 +25,10 @@ final class CompositeLimitTest extends TestCase
         $this->assertEquals(['This is the reason it failed'], $limit->getReasons());
     }
 
-    public function test_composite_limit_multiple_failures()
+    /**
+     * @test
+     */
+    public function it_can_fail_with_multiple_reasons()
     {
         $fail = new MockLimit(true, ['failure 1']);
         $fail2 = new MockLimit(true, ['failure 2']);
@@ -37,7 +46,10 @@ final class CompositeLimitTest extends TestCase
         ], $limit->getReasons());
     }
 
-    public function test_composite_limit_pass()
+    /**
+     * @test
+     */
+    public function it_can_pass()
     {
         $pass = new MockLimit();
         $pass2 = new MockLimit();
