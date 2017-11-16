@@ -44,10 +44,8 @@ class QueueCleanCommandTest extends TestCase
      */
     public function it_will_clean_a_queue()
     {
-        $message = new InternalSqsMessage('article', '42');
-        $this->queue->enqueue($message);
-        $message = new InternalSqsMessage('article', '43');
-        $this->queue->enqueue($message);
+        $this->queue->enqueue(new InternalSqsMessage('article', '42'));
+        $this->queue->enqueue(new InternalSqsMessage('article', '43'));
         $this->assertEquals(2, $this->queue->count());
         $this->commandTester->execute(['command' => $this->command->getName()]);
         $this->assertEquals(0, $this->queue->count());

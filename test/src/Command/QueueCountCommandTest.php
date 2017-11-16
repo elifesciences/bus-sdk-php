@@ -45,12 +45,9 @@ class QueueCountCommandTest extends TestCase
         $this->commandTester->execute(['command' => $this->command->getName()]);
         $display = trim($this->commandTester->getDisplay());
         $this->assertEquals('0', $display);
-        $message = new InternalSqsMessage('article', '42');
-        $this->queue->enqueue($message);
-        $message = new InternalSqsMessage('article', '43');
-        $this->queue->enqueue($message);
-        $message = new InternalSqsMessage('article', '44');
-        $this->queue->enqueue($message);
+        $this->queue->enqueue(new InternalSqsMessage('article', '42'));
+        $this->queue->enqueue(new InternalSqsMessage('article', '43'));
+        $this->queue->enqueue(new InternalSqsMessage('article', '44'));
         $this->commandTester->execute(['command' => $this->command->getName()]);
         $display = trim($this->commandTester->getDisplay());
         $this->assertEquals('3', $display);
