@@ -51,7 +51,7 @@ final class QueueCommandTest extends TestCase
             $this->limitIterations(1)
         );
         $this->application->add($this->command);
-        $this->commandTester = new CommandTester($command = $this->application->get($this->command->getName()));
+        $this->commandTester = new CommandTester($this->application->get($this->command->getName()));
     }
 
     /**

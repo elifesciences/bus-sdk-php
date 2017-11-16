@@ -36,7 +36,7 @@ class QueueCleanCommandTest extends TestCase
             $this->createMock(LoggerInterface::class)
         );
         $this->application->add($this->command);
-        $this->commandTester = new CommandTester($command = $this->application->get($this->command->getName()));
+        $this->commandTester = new CommandTester($this->application->get($this->command->getName()));
     }
 
     /**
