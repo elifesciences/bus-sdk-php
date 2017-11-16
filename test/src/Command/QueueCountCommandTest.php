@@ -40,7 +40,8 @@ class QueueCountCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_will_count_queue_items() {
+    public function it_will_count_queue_items()
+    {
         $this->commandTester->execute(['command' => $this->command->getName()]);
         $display = trim($this->commandTester->getDisplay());
         $this->assertEquals('0', $display);

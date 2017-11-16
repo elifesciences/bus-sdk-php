@@ -42,7 +42,8 @@ class QueueCleanCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_will_clean_a_queue() {
+    public function it_will_clean_a_queue()
+    {
         $message = new InternalSqsMessage('article', '42');
         $this->queue->enqueue($message);
         $message = new InternalSqsMessage('article', '43');
