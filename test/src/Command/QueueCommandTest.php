@@ -10,6 +10,7 @@ use eLife\Bus\Queue\Mock\WatchableQueueMock;
 use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\QueueItemTransformer;
 use eLife\Logging\Monitoring;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
@@ -27,6 +28,7 @@ final class QueueCommandTest extends TestCase
     private $command;
     /** @var CommandTester */
     private $commandTester;
+    private $logger;
     private $transformer;
     /** @var WatchableQueueMock */
     private $queue;
@@ -38,13 +40,14 @@ final class QueueCommandTest extends TestCase
     {
         $this->application = new Application();
         $this->queue = new WatchableQueueMock();
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->transformer = $this->createMock(QueueItemTransformer::class);
         $this->transformer
             ->expects($this->any())
             ->method('transform')
             ->will($this->returnValue(['field' => 'value']));
         $this->command = new ApplicationSpecificQueueCommand(
-            $this->createMock(LoggerInterface::class),
+            $this->logger,
             $this->queue,
             $this->transformer,
             new Monitoring(),
@@ -62,6 +65,31 @@ final class QueueCommandTest extends TestCase
         $message = new InternalSqsMessage('article', '42');
         $this->queue->enqueue($message);
         $this->commandTester->execute(['command' => $this->command->getName()]);
+        $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_remove_item_from_queue_if_process_fails()
+    {
+        $application = new Application();
+        $queue_command = $this->getMockBuilder(QueueCommand::class)
+            ->setConstructorArgs([$this->logger, $this->queue, $this->transformer, new Monitoring(), $this->limitIterations(1)])
+            ->setMethods(['process'])
+            ->getMock();
+        $queue_command
+            ->expects($this->once())
+            ->method('process')
+            ->will($this->throwException(new Exception('Fail gracefully')));
+        $application->add($queue_command);
+        $this->queue->enqueue(new InternalSqsMessage('article', '42'));
+        $this->logger
+            ->expects($this->once())
+            ->method('error')
+            ->with('queue:watch: There was an unknown problem processing article (42)', ['exception' => new Exception('Fail gracefully'), 'item' => new InternalSqsMessage('article', '42')]);
+        $command_tester = new CommandTester($application->get($queue_command->getName()));
+        $command_tester->execute(['command' => $queue_command->getName()]);
         $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
     }
 
