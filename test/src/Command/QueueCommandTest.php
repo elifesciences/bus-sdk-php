@@ -73,23 +73,21 @@ final class QueueCommandTest extends TestCase
      */
     public function it_will_remove_item_from_queue_if_process_fails()
     {
-        $application = new Application();
-        $queue_command = $this->getMockBuilder(QueueCommand::class)
-            ->setConstructorArgs([$this->logger, $this->queue, $this->transformer, new Monitoring(), $this->limitIterations(1)])
-            ->setMethods(['process'])
-            ->getMock();
-        $queue_command
-            ->expects($this->once())
-            ->method('process')
-            ->will($this->throwException(new Exception('Fail gracefully')));
-        $application->add($queue_command);
+        $command = new ProcessingErrorQueueCommand(
+            $this->logger,
+            $this->queue,
+            $this->transformer,
+            new Monitoring(),
+            $this->limitIterations(1)
+        );
+        $this->application->add($command);
         $this->queue->enqueue(new InternalSqsMessage('article', '42'));
         $this->logger
             ->expects($this->once())
             ->method('error')
             ->with('queue:watch: There was an unknown problem processing article (42)', ['exception' => new Exception('Fail gracefully'), 'item' => new InternalSqsMessage('article', '42')]);
-        $command_tester = new CommandTester($application->get($queue_command->getName()));
-        $command_tester->execute(['command' => $queue_command->getName()]);
+        $command_tester = new CommandTester($this->application->get($command->getName()));
+        $command_tester->execute(['command' => $command->getName()]);
         $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
     }
 
@@ -112,5 +110,13 @@ class ApplicationSpecificQueueCommand extends QueueCommand
 {
     protected function process(InputInterface $input, QueueItem $item, $entity = null)
     {
+    }
+}
+
+class ProcessingErrorQueueCommand extends ApplicationSpecificQueueCommand
+{
+    protected function process(InputInterface $input, QueueItem $item, $entity = null)
+    {
+        throw new Exception('Fail gracefully');
     }
 }
