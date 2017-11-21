@@ -92,7 +92,6 @@ abstract class QueueCommand extends Command
                     'exception' => $e,
                     'item' => $item,
                 ]);
-                //$this->queue->commit($item);
             } catch (Throwable $e) {
                 $this->logger->error("{$this->getName()}: There was an unknown problem processing {$item->getType()} ({$item->getId()})", [
                     'exception' => $e,
