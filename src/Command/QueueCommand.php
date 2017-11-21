@@ -83,7 +83,7 @@ abstract class QueueCommand extends Command
             $this->queue->commit($item);
         } catch (Throwable $e) {
             // Unknown error.
-            $this->logger->error("{$this->getName()}: There was an unknown problem importing {$item->getType()} ({$item->getId()})", [
+            $this->logger->error("{$this->getName()}: There was an unknown problem transforming {$item->getType()} ({$item->getId()})", [
                 'exception' => $e,
                 'item' => $item,
             ]);

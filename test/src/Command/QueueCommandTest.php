@@ -2,6 +2,7 @@
 
 namespace test\eLife\Bus\Command;
 
+use eLife\ApiClient\Exception\BadResponse;
 use eLife\Bus\Command\QueueCommand;
 use eLife\Bus\Limit\CallbackLimit;
 use eLife\Bus\Limit\Limit;
@@ -11,6 +12,8 @@ use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\QueueItemTransformer;
 use eLife\Logging\Monitoring;
 use Exception;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
@@ -65,6 +68,62 @@ final class QueueCommandTest extends TestCase
         $message = new InternalSqsMessage('article', '42');
         $this->queue->enqueue($message);
         $this->commandTester->execute(['command' => $this->command->getName()]);
+        $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_remove_item_from_queue_if_transformer_fails()
+    {
+        $transformer = $this->createMock(QueueItemTransformer::class);
+        $transformer
+            ->expects($this->any())
+            ->method('transform')
+            ->will($this->throwException(new Exception('Unknown type of entity')));
+        $command = new ApplicationSpecificQueueCommand(
+            $this->logger,
+            $this->queue,
+            $transformer,
+            new Monitoring(),
+            $this->limitIterations(1)
+        );
+        $this->application->add($command);
+        $this->queue->enqueue(new InternalSqsMessage('article', '42'));
+        $this->logger
+            ->expects($this->once())
+            ->method('error')
+            ->with('queue:watch: There was an unknown problem transforming article (42)', ['exception' => new Exception('Unknown type of entity'), 'item' => new InternalSqsMessage('article', '42')]);
+        $command_tester = new CommandTester($this->application->get($command->getName()));
+        $command_tester->execute(['command' => $command->getName()]);
+        $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
+    }
+
+    /**
+     * @test
+     */
+    public function explains_known_api_failures_from_transformer()
+    {
+        $transformer = $this->createMock(QueueItemTransformer::class);
+        $transformer
+            ->expects($this->any())
+            ->method('transform')
+            ->will($this->throwException(new BadResponse('Fail to retrieve data', new Request('GET', '/something/42'), new Response(404))));
+        $command = new ApplicationSpecificQueueCommand(
+            $this->logger,
+            $this->queue,
+            $transformer,
+            new Monitoring(),
+            $this->limitIterations(1)
+        );
+        $this->application->add($command);
+        $this->queue->enqueue(new InternalSqsMessage('article', '42'));
+        $this->logger
+            ->expects($this->once())
+            ->method('error')
+            ->with('queue:watch: Item does not exist in API: article (42)', ['exception' => new BadResponse('Fail to retrieve data', new Request('GET', '/something/42'), new Response(404)), 'item' => new InternalSqsMessage('article', '42')]);
+        $command_tester = new CommandTester($this->application->get($command->getName()));
+        $command_tester->execute(['command' => $command->getName()]);
         $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
     }
 
