@@ -81,15 +81,6 @@ abstract class QueueCommand extends Command
             ]);
             // Remove from queue.
             $this->queue->commit($item);
-        } catch (Throwable $e) {
-            // Unknown error.
-            $this->logger->error("{$this->getName()}: There was an unknown problem transforming {$item->getType()} ({$item->getId()})", [
-                'exception' => $e,
-                'item' => $item,
-            ]);
-            $this->monitoring->recordException($e, "Error in importing {$item->getType()} {$item->getId()}");
-            // Remove from queue.
-            $this->queue->commit($item);
         }
 
         return $entity;

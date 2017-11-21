@@ -93,7 +93,7 @@ final class QueueCommandTest extends TestCase
         $this->logger
             ->expects($this->once())
             ->method('error')
-            ->with('queue:watch: There was an unknown problem transforming article (42)', ['exception' => new Exception('Unknown type of entity'), 'item' => new InternalSqsMessage('article', '42')]);
+            ->with('queue:watch: There was an unknown problem processing article (42)', ['exception' => new Exception('Unknown type of entity'), 'item' => new InternalSqsMessage('article', '42')]);
         $command_tester = new CommandTester($this->application->get($command->getName()));
         $command_tester->execute(['command' => $command->getName()]);
         $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
