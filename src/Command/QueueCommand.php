@@ -100,20 +100,21 @@ abstract class QueueCommand extends Command
         $this->logger->debug($this->getName().' Loop start, listening to queue', ['queue' => $this->queue->getName()]);
         $item = $this->queue->dequeue();
         if ($item) {
-            $this->monitoring->startTransaction();
-            if ($entity = $this->transform($item)) {
-                try {
+            try {
+                $this->monitoring->startTransaction();
+                if ($entity = $this->transform($item)) {
                     $this->process($input, $item, $entity);
-                } catch (Throwable $e) {
-                    $this->logger->error("{$this->getName()}: There was an unknown problem processing {$item->getType()} ({$item->getId()})", [
-                        'exception' => $e,
-                        'item' => $item,
-                    ]);
-                    $this->monitoring->recordException($e, "Error in processing {$item->getType()} {$item->getId()}");
                 }
+                $this->monitoring->endTransaction();
+            } catch (Throwable $e) {
+                $this->logger->error("{$this->getName()}: There was an unknown problem processing {$item->getType()} ({$item->getId()})", [
+                    'exception' => $e,
+                    'item' => $item,
+                ]);
+                $this->monitoring->recordException($e, "Error in processing {$item->getType()} {$item->getId()}");
+            } finally {
                 $this->queue->commit($item);
             }
-            $this->monitoring->endTransaction();
         }
         $this->logger->debug($this->getName().' End of loop');
     }
