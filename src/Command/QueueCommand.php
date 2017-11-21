@@ -70,27 +70,7 @@ abstract class QueueCommand extends Command
     final protected function transform(QueueItem $item)
     {
         $entity = null;
-        try {
-            // Transform into something for gearman.
-            $entity = $this->transformer->transform($item, $this->serializedTransform);
-        } catch (BadResponse $e) {
-            // We got a 404 or server error.
-            $this->logger->error("{$this->getName()}: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
-                'exception' => $e,
-                'item' => $item,
-            ]);
-            // Remove from queue.
-            $this->queue->commit($item);
-        } catch (Throwable $e) {
-            // Unknown error.
-            $this->logger->error("{$this->getName()}: There was an unknown problem importing {$item->getType()} ({$item->getId()})", [
-                'exception' => $e,
-                'item' => $item,
-            ]);
-            $this->monitoring->recordException($e, "Error in importing {$item->getType()} {$item->getId()}");
-            // Remove from queue.
-            $this->queue->commit($item);
-        }
+        $entity = $this->transformer->transform($item, $this->serializedTransform);
 
         return $entity;
     }
@@ -100,20 +80,27 @@ abstract class QueueCommand extends Command
         $this->logger->debug($this->getName().' Loop start, listening to queue', ['queue' => $this->queue->getName()]);
         $item = $this->queue->dequeue();
         if ($item) {
-            $this->monitoring->startTransaction();
-            if ($entity = $this->transform($item)) {
-                try {
+            try {
+                $this->monitoring->startTransaction();
+                if ($entity = $this->transform($item)) {
                     $this->process($input, $item, $entity);
-                } catch (Throwable $e) {
-                    $this->logger->error("{$this->getName()}: There was an unknown problem processing {$item->getType()} ({$item->getId()})", [
-                        'exception' => $e,
-                        'item' => $item,
-                    ]);
-                    $this->monitoring->recordException($e, "Error in processing {$item->getType()} {$item->getId()}");
                 }
+                $this->monitoring->endTransaction();
+            } catch (BadResponse $e) {
+                // We got a 404 or server error.
+                $this->logger->error("{$this->getName()}: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
+                    'exception' => $e,
+                    'item' => $item,
+                ]);
+            } catch (Throwable $e) {
+                $this->logger->error("{$this->getName()}: There was an unknown problem processing {$item->getType()} ({$item->getId()})", [
+                    'exception' => $e,
+                    'item' => $item,
+                ]);
+                $this->monitoring->recordException($e, "Error in processing {$item->getType()} {$item->getId()}");
+            } finally {
                 $this->queue->commit($item);
             }
-            $this->monitoring->endTransaction();
         }
         $this->logger->debug($this->getName().' End of loop');
     }

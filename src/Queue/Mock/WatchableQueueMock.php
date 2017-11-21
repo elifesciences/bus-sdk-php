@@ -44,17 +44,10 @@ final class WatchableQueueMock implements WatchableQueue
      */
     public function commit(QueueItem $item)
     {
+        if (!array_key_exists($item->getReceipt(), $this->invisibleItems)) {
+            throw new LogicException("Item {$item->getReceipt()} has already been committed and removed from the queue");
+        }
         unset($this->invisibleItems[$item->getReceipt()]);
-    }
-
-    /**
-     * Mock: re-add to queue.
-     */
-    public function release(QueueItem $item) : bool
-    {
-        array_unshift($this->items, $item);
-
-        return true;
     }
 
     public function clean()
