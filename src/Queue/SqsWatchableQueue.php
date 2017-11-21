@@ -64,24 +64,6 @@ final class SqsWatchableQueue implements WatchableQueue
         ]);
     }
 
-    /**
-     * This will happen when an error happens, we release the item back into the queue.
-     */
-    public function release(QueueItem $item) : bool
-    {
-        try {
-            $this->client->changeMessageVisibility([
-                'QueueUrl' => $this->url,
-                'ReceiptHandle' => $item->getReceipt(),
-                'VisibilityTimeout' => 0,
-            ]);
-        } catch (Throwable $e) {
-            return false;
-        }
-
-        return true;
-    }
-
     public function clean()
     {
         $this->client->purgeQueue([
