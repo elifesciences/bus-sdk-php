@@ -102,7 +102,15 @@ abstract class QueueCommand extends Command
         if ($item) {
             $this->monitoring->startTransaction();
             if ($entity = $this->transform($item)) {
-                $this->process($input, $item, $entity);
+                try {
+                    $this->process($input, $item, $entity);
+                } catch (Throwable $e) {
+                    $this->logger->error("{$this->getName()}: There was an unknown problem processing {$item->getType()} ({$item->getId()})", [
+                        'exception' => $e,
+                        'item' => $item,
+                    ]);
+                    $this->monitoring->recordException($e, "Error in processing {$item->getType()} {$item->getId()}");
+                }
                 $this->queue->commit($item);
             }
             $this->monitoring->endTransaction();
