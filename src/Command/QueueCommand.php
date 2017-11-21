@@ -70,18 +70,7 @@ abstract class QueueCommand extends Command
     final protected function transform(QueueItem $item)
     {
         $entity = null;
-        try {
-            // Transform into something for gearman.
-            $entity = $this->transformer->transform($item, $this->serializedTransform);
-        } catch (BadResponse $e) {
-            // We got a 404 or server error.
-            $this->logger->error("{$this->getName()}: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
-                'exception' => $e,
-                'item' => $item,
-            ]);
-            // Remove from queue.
-            $this->queue->commit($item);
-        }
+        $entity = $this->transformer->transform($item, $this->serializedTransform);
 
         return $entity;
     }
@@ -97,6 +86,13 @@ abstract class QueueCommand extends Command
                     $this->process($input, $item, $entity);
                 }
                 $this->monitoring->endTransaction();
+            } catch (BadResponse $e) {
+                // We got a 404 or server error.
+                $this->logger->error("{$this->getName()}: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
+                    'exception' => $e,
+                    'item' => $item,
+                ]);
+                //$this->queue->commit($item);
             } catch (Throwable $e) {
                 $this->logger->error("{$this->getName()}: There was an unknown problem processing {$item->getType()} ({$item->getId()})", [
                     'exception' => $e,
