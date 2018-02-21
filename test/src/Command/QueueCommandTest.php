@@ -2,6 +2,7 @@
 
 namespace test\eLife\Bus\Command;
 
+use eLife\ApiClient\Exception\BadResponse;
 use eLife\Bus\Command\QueueCommand;
 use eLife\Bus\Limit\CallbackLimit;
 use eLife\Bus\Limit\Limit;
@@ -11,6 +12,8 @@ use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\QueueItemTransformer;
 use eLife\Logging\Monitoring;
 use Exception;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
@@ -71,7 +74,65 @@ final class QueueCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_will_remove_item_from_queue_if_process_fails()
+    public function it_will_remove_item_from_queue_if_api_returns_404()
+    {
+        $transformer = $this->createMock(QueueItemTransformer::class);
+        $transformer
+            ->expects($this->any())
+            ->method('transform')
+            ->will($this->throwException($exception = new BadResponse('not found', new Request('GET', 'http://www.example.com/'), new Response(404))));
+
+        $command = new ProcessingErrorQueueCommand(
+            $this->logger,
+            $this->queue,
+            $transformer,
+            new Monitoring(),
+            $this->limitIterations(1)
+        );
+        $this->application->add($command);
+        $this->queue->enqueue(new InternalSqsMessage('article', '42'));
+        $this->logger
+            ->expects($this->once())
+            ->method('error')
+            ->with('queue:watch: Item does not exist in API: article (42)', ['exception' => $exception, 'item' => new InternalSqsMessage('article', '42')]);
+        $command_tester = new CommandTester($this->application->get($command->getName()));
+        $command_tester->execute(['command' => $command->getName()]);
+        $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_remove_item_from_queue_if_api_returns_500()
+    {
+        $transformer = $this->createMock(QueueItemTransformer::class);
+        $transformer
+            ->expects($this->any())
+            ->method('transform')
+            ->will($this->throwException($exception = new BadResponse('not found', new Request('GET', 'http://www.example.com/'), new Response(500))));
+
+        $command = new ProcessingErrorQueueCommand(
+            $this->logger,
+            $this->queue,
+            $transformer,
+            new Monitoring(),
+            $this->limitIterations(1)
+        );
+        $this->application->add($command);
+        $this->queue->enqueue(new InternalSqsMessage('article', '42'));
+        $this->logger
+            ->expects($this->once())
+            ->method('error')
+            ->with('queue:watch: There was an unknown problem importing article (42)', ['exception' => $exception, 'item' => new InternalSqsMessage('article', '42')]);
+        $command_tester = new CommandTester($this->application->get($command->getName()));
+        $command_tester->execute(['command' => $command->getName()]);
+        $this->assertEquals(1, $this->queue->count(), 'Expected 1 item');
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_not_remove_items_from_queue_if_process_fails()
     {
         $command = new ProcessingErrorQueueCommand(
             $this->logger,
@@ -88,7 +149,7 @@ final class QueueCommandTest extends TestCase
             ->with('queue:watch: There was an unknown problem processing article (42)', ['exception' => new Exception('Fail gracefully'), 'item' => new InternalSqsMessage('article', '42')]);
         $command_tester = new CommandTester($this->application->get($command->getName()));
         $command_tester->execute(['command' => $command->getName()]);
-        $this->assertEquals(0, $this->queue->count(), 'Expected an empty queue');
+        $this->assertEquals(1, $this->queue->count(), 'Expected 1 item');
     }
 
     private function limitIterations(int $number) : Limit

@@ -53,6 +53,7 @@ final class WatchableQueueMock implements WatchableQueue
     public function release(QueueItem $item) : bool
     {
         array_unshift($this->items, $item);
+        unset($this->invisibleItems[$item->getReceipt()]);
 
         return true;
     }
