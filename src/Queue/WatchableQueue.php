@@ -26,7 +26,7 @@ interface WatchableQueue extends Countable
     /**
      * This will happen when an error happens, we release the item back into the queue.
      */
-    public function release(QueueItem $item) : bool;
+    public function release(QueueItem $item);
 
     /**
      * Deletes everything from the queue.

@@ -121,10 +121,14 @@ abstract class QueueCommand extends Command
 
     private function release(QueueItem $item)
     {
-        if (!$this->queue->release($item)) {
+        try {
+            $this->queue->release($item);
+        } catch (Throwable $e) {
             $this->logger->critical("{$this->getName()}: Failed to release {$item->getType()} ({$item->getId()})", [
+                'exception' => $e,
                 'item' => $item,
             ]);
+            $this->monitoring->recordException($e, "Error in releasing {$item->getType()} {$item->getId()}");
         }
     }
 }
