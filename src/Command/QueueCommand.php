@@ -45,7 +45,7 @@ abstract class QueueCommand extends Command
      * You never need to call commit().
      * Possible things to do:
      * - perform work on $item/$entity
-     * - throw an exception in case of error
+     * - throw an exception in case of error.
      */
     abstract protected function process(InputInterface $input, QueueItem $item, $entity = null);
 
