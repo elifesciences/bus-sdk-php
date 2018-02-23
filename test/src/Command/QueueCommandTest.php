@@ -103,7 +103,7 @@ final class QueueCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_will_remove_item_from_queue_if_api_returns_500()
+    public function it_will_not_remove_items_from_queue_if_api_returns_500()
     {
         $transformer = $this->createMock(QueueItemTransformer::class);
         $transformer
