@@ -26,7 +26,7 @@ final class SqsMessageTransformer implements QueueItemTransformer, SingleItemRep
         $body = json_decode($message['Body']);
         $md5 = $message['MD5OfBody'];
         $handle = $message['ReceiptHandle'];
-        $attempts = (int) $message['Attributes']['ApproximateReceiveCount'] ?? 0;
+        $attempts = (int) ($message['Attributes']['ApproximateReceiveCount'] ?? 0);
         if (md5($message['Body']) !== $md5) {
             throw new LogicException('Hash mismatch: possible corrupted message.');
         }
