@@ -6,11 +6,13 @@ final class InternalSqsMessage implements QueueItem
 {
     private $type;
     private $id;
+    private $attempts;
 
-    public function __construct(string $type, string $id)
+    public function __construct(string $type, string $id, int $attempts = 0)
     {
         $this->type = $type;
         $this->id = $id;
+        $this->attempts = $attempts;
     }
 
     /**
@@ -35,5 +37,10 @@ final class InternalSqsMessage implements QueueItem
     public function getReceipt() : string
     {
         return $this->type.'--'.$this->id;
+    }
+
+    public function getAttempts() : int
+    {
+        return $this->attempts;
     }
 }

@@ -26,11 +26,12 @@ final class SqsMessageTransformer implements QueueItemTransformer, SingleItemRep
         $body = json_decode($message['Body']);
         $md5 = $message['MD5OfBody'];
         $handle = $message['ReceiptHandle'];
+        $attempts = (int) $message['Attributes']['ApproximateReceiveCount'] ?? 0;
         if (md5($message['Body']) !== $md5) {
             throw new LogicException('Hash mismatch: possible corrupted message.');
         }
 
-        return new BusSqsMessage($messageId, $body->id ?? $body->number, $body->type, $handle);
+        return new BusSqsMessage($messageId, $body->id ?? $body->number, $body->type, $handle, $attempts);
     }
 
     public static function hasItems(array $message) : bool

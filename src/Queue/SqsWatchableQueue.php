@@ -40,6 +40,7 @@ final class SqsWatchableQueue implements WatchableQueue
     public function dequeue()
     {
         $message = $this->client->receiveMessage([
+            'AttributeNames' => ['ApproximateReceiveCount'],
             'QueueUrl' => $this->url,
             'WaitTimeSeconds' => $this->pollingTimeout,
             'VisibilityTimeout' => $this->visibilityTimeout,
@@ -71,7 +72,7 @@ final class SqsWatchableQueue implements WatchableQueue
         $this->client->changeMessageVisibility([
             'QueueUrl' => $this->url,
             'ReceiptHandle' => $item->getReceipt(),
-            'VisibilityTimeout' => 0,
+            'VisibilityTimeout' => $this->visibilityTimeout * ($item->getAttempts() + 1),
         ]);
     }
 
