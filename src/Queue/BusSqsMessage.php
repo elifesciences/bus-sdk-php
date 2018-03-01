@@ -8,13 +8,15 @@ final class BusSqsMessage implements QueueItem
     private $type;
     private $receipt;
     private $messageId;
+    private $attempts;
 
-    public function __construct(string $messageId, string $id, string $type, string $receipt)
+    public function __construct(string $messageId, string $id, string $type, string $receipt, int $attempts = 0)
     {
         $this->messageId = $messageId;
         $this->id = $id;
         $this->type = $type;
         $this->receipt = $receipt;
+        $this->attempts = $attempts;
     }
 
     /**
@@ -39,5 +41,10 @@ final class BusSqsMessage implements QueueItem
     public function getReceipt() : string
     {
         return $this->receipt;
+    }
+
+    public function getAttempts() : int
+    {
+        return $this->attempts;
     }
 }

@@ -45,8 +45,7 @@ abstract class QueueCommand extends Command
      * You never need to call commit().
      * Possible things to do:
      * - perform work on $item/$entity
-     * - throw an exception in case of error
-     * In both cases the message will be removed. Only if the process crashes the item will be retried later.
+     * - throw an exception in case of error.
      */
     abstract protected function process(InputInterface $input, QueueItem $item, $entity = null);
 
@@ -73,23 +72,23 @@ abstract class QueueCommand extends Command
         try {
             // Transform into something for gearman.
             $entity = $this->transformer->transform($item, $this->serializedTransform);
-        } catch (BadResponse $e) {
-            // We got a 404 or server error.
-            $this->logger->error("{$this->getName()}: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
-                'exception' => $e,
-                'item' => $item,
-            ]);
-            // Remove from queue.
-            $this->queue->commit($item);
         } catch (Throwable $e) {
-            // Unknown error.
-            $this->logger->error("{$this->getName()}: There was an unknown problem importing {$item->getType()} ({$item->getId()})", [
-                'exception' => $e,
-                'item' => $item,
-            ]);
-            $this->monitoring->recordException($e, "Error in importing {$item->getType()} {$item->getId()}");
-            // Remove from queue.
-            $this->queue->commit($item);
+            if ($e instanceof BadResponse && in_array($e->getResponse()->getStatusCode(), [404, 410])) {
+                $this->logger->error("{$this->getName()}: Item does not exist in API: {$item->getType()} ({$item->getId()})", [
+                    'exception' => $e,
+                    'item' => $item,
+                ]);
+                // Remove from queue.
+                $this->queue->commit($item);
+            } else {
+                // Unknown error.
+                $this->logger->error("{$this->getName()}: There was an unknown problem importing {$item->getType()} ({$item->getId()})", [
+                    'exception' => $e,
+                    'item' => $item,
+                ]);
+                $this->monitoring->recordException($e, "Error in importing {$item->getType()} {$item->getId()}");
+                $this->release($item);
+            }
         }
 
         return $entity;
@@ -104,17 +103,32 @@ abstract class QueueCommand extends Command
             if ($entity = $this->transform($item)) {
                 try {
                     $this->process($input, $item, $entity);
+                    // Remove from queue.
+                    $this->queue->commit($item);
                 } catch (Throwable $e) {
                     $this->logger->error("{$this->getName()}: There was an unknown problem processing {$item->getType()} ({$item->getId()})", [
                         'exception' => $e,
                         'item' => $item,
                     ]);
                     $this->monitoring->recordException($e, "Error in processing {$item->getType()} {$item->getId()}");
+                    $this->release($item);
                 }
-                $this->queue->commit($item);
             }
             $this->monitoring->endTransaction();
         }
         $this->logger->debug($this->getName().' End of loop');
+    }
+
+    private function release(QueueItem $item)
+    {
+        try {
+            $this->queue->release($item);
+        } catch (Throwable $e) {
+            $this->logger->critical("{$this->getName()}: Failed to release {$item->getType()} ({$item->getId()})", [
+                'exception' => $e,
+                'item' => $item,
+            ]);
+            $this->monitoring->recordException($e, "Error in releasing {$item->getType()} {$item->getId()}");
+        }
     }
 }

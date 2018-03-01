@@ -18,4 +18,6 @@ interface QueueItem
      * SQS ReceiptHandle.
      */
     public function getReceipt() : string;
+
+    public function getAttempts() : int;
 }
