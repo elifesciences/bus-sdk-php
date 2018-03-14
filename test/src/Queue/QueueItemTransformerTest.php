@@ -52,6 +52,7 @@ final class QueueItemTransformerTest extends TestCase
         $this->assertEquals($message->getType(), 'blog-article');
         $this->assertEquals($message->getReceipt(), 'very-long-string-thing');
     }
+
     /**
      * @test
      */

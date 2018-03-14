@@ -69,7 +69,7 @@ trait BasicTransformer
     {
         $sdk = $this->getSdk($item);
         $entity = $sdk->get($item->getId())->wait(true);
-        if ($serialized === false) {
+        if (false === $serialized) {
             return $entity;
         }
 
