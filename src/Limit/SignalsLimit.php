@@ -31,7 +31,7 @@ final class SignalsLimit implements Limit
     {
         pcntl_signal_dispatch();
 
-        return $this->valid === false;
+        return false === $this->valid;
     }
 
     /**

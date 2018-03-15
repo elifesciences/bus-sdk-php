@@ -86,7 +86,7 @@ final class CachedTransformer implements QueueItemTransformer, SingleItemReposit
     {
         $sdk = $this->getSdk($item);
         $entity = $sdk->get($item->getId())->wait(true);
-        if ($this->shouldCacheEntity($item->getType(), $item->getId()) === false) {
+        if (false === $this->shouldCacheEntity($item->getType(), $item->getId())) {
             return $entity;
         }
         if ($entity) {
@@ -122,7 +122,7 @@ final class CachedTransformer implements QueueItemTransformer, SingleItemReposit
     public function transform(QueueItem $item, bool $serialized = true)
     {
         $entity = $this->getFreshDataWithCache($item);
-        if ($serialized === false) {
+        if (false === $serialized) {
             return $entity;
         }
 
