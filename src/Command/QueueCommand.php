@@ -59,7 +59,6 @@ abstract class QueueCommand extends Command
     final public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->logger->info($this->getName().' Started listening.');
-        $this->monitoring->nameTransaction($this->getName());
         while (!$this->limit->hasBeenReached()) {
             $this->loop($input);
         }
@@ -100,6 +99,7 @@ abstract class QueueCommand extends Command
         $item = $this->queue->dequeue();
         if ($item) {
             $this->monitoring->startTransaction();
+            $this->monitoring->nameTransaction($this->getName());
             if ($entity = $this->transform($item)) {
                 try {
                     $this->process($input, $item, $entity);
