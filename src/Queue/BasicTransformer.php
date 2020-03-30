@@ -54,7 +54,7 @@ trait BasicTransformer
                 break;
 
             default:
-                throw new LogicException("ApiSDK does not exist for the type `{$type}`.");
+                throw new LogicException("Type `{$type}` not supported yet in bus-sdk-php.");
         }
     }
 
