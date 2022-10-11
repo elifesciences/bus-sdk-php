@@ -52,6 +52,11 @@ trait BasicTransformer
             case 'profile':
                 return $this->sdk->profiles();
                 break;
+                break;
+
+            case 'reviewed-preprint':
+                return $this->sdk->profiles();
+                break;
 
             default:
                 throw new LogicException("Type `{$type}` not supported yet in bus-sdk-php.");
