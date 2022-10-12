@@ -9,4 +9,5 @@ else
     composer update --no-interaction
 fi
 rm -f build/*.xml
+
 vendor/bin/phpunit --log-junit="build/${dependencies}-phpunit.xml"
