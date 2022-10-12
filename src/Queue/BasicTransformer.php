@@ -52,7 +52,6 @@ trait BasicTransformer
             case 'profile':
                 return $this->sdk->profiles();
                 break;
-                break;
 
             case 'reviewed-preprint':
                 return $this->sdk->reviewedPreprints();
