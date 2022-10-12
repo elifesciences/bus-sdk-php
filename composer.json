@@ -15,7 +15,7 @@
     },
     "require": {
         "php": "^7.0",
-        "aws/aws-sdk-php": "^3.19",
+        "aws/aws-sdk-php": "^3.238",
         "doctrine/cache": "^1.6",
         "elife/api-sdk": "^1.0",
         "elife/logging-sdk": "^1.0",
