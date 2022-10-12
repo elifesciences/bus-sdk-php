@@ -55,7 +55,7 @@ trait BasicTransformer
                 break;
 
             case 'reviewed-preprint':
-                return $this->sdk->profiles();
+                return $this->sdk->reviewedPreprints();
                 break;
 
             default:
