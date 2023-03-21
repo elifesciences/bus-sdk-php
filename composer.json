@@ -13,11 +13,15 @@
             "test\\eLife\\Bus\\": "./test/src"
         }
     },
+    "repositories": [
+      {"type": "vcs",
+       "url": "https://github.com/elifesciences/api-sdk-php"}
+    ],
     "require": {
         "php": ">=7.0",
         "aws/aws-sdk-php": "^3.238",
         "doctrine/cache": "^1.6",
-        "elife/api-sdk": "^1.0",
+        "elife/api-sdk": "dev-relax-php-requirement",
         "elife/logging-sdk": "^1.0",
         "jms/serializer": "^1.4",
         "psr/log": "^1.0"
