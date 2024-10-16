@@ -23,7 +23,7 @@ final class SqsWatchableQueueTest extends TestCase
      */
     public function setUpSqsClient()
     {
-        $this->sqsClient = new SqsClient(['region' => 'us-east-1', 'version' => '2012-11-05']);
+        $this->sqsClient = new SqsClient(['region' => 'us-east-1', 'version' => '2012-11-05', 'credentials' => false]);
         $this->mockHandler = new MockHandler();
 
         $this->sqsClient->getHandlerList()->setHandler($this->mockHandler);
@@ -56,10 +56,10 @@ final class SqsWatchableQueueTest extends TestCase
         $this->assertArraySubset($expected, $result->toArray());
     }
 
-    private function assertArraySubset(array $expected, array $actual) {
+    public static function assertArraySubset($expected, $actual, $strict = false, $message = '') {
         foreach ($expected as $key => $value) {
-            $this->assertArrayHasKey($key, $actual);
-            $this->assertSame($value, $actual[$key]);
+            self::assertArrayHasKey($key, $actual);
+            self::assertSame($value, $actual[$key]);
         }
     }
 
