@@ -56,10 +56,10 @@ final class SqsWatchableQueueTest extends TestCase
         $this->assertArraySubset($expected, $result->toArray());
     }
 
-    private function assertArraySubset(array $expected, array $actual) {
+    public static function assertArraySubset($expected, $actual, $strict = false, $message = '') {
         foreach ($expected as $key => $value) {
-            $this->assertArrayHasKey($key, $actual);
-            $this->assertSame($value, $actual[$key]);
+            self::assertArrayHasKey($key, $actual);
+            self::assertSame($value, $actual[$key]);
         }
     }
 
