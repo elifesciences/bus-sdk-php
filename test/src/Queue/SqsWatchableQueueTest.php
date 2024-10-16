@@ -23,7 +23,7 @@ final class SqsWatchableQueueTest extends TestCase
      */
     public function setUpSqsClient()
     {
-        $this->sqsClient = new SqsClient(['region' => 'us-east-1', 'version' => '2012-11-05']);
+        $this->sqsClient = new SqsClient(['region' => 'us-east-1', 'version' => '2012-11-05', 'credentials' => false]);
         $this->mockHandler = new MockHandler();
 
         $this->sqsClient->getHandlerList()->setHandler($this->mockHandler);
