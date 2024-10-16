@@ -7,10 +7,10 @@ lint: build
 	docker run --rm -v ./:/code -v/code/vendor php-composer:$(PHP_VERSION) bash -c 'cd /code && composer update && vendor/bin/phpcs --standard=phpcs.xml.dist --warning-severity=0 -p src/ test/'
 
 test: build lint
-	docker run --rm -v ./:/code -e dependencies=highest -v/code/vendor php-composer:$(PHP_VERSION) bash -c 'cd /code && composer update && ./project_tests.sh'
+	docker run --rm -v ./:/code -e dependencies=highest -e AWS_SUPPRESS_PHP_DEPRECATION_WARNING=true -v/code/vendor php-composer:$(PHP_VERSION) bash -c 'cd /code && composer update && ./project_tests.sh'
 
 test-lowest: build lint
-	docker run --rm -v ./:/code -e dependencies=lowest -v/code/vendor php-composer:$(PHP_VERSION) bash -c 'cd /code && ./project_tests.sh'
+	docker run --rm -v ./:/code -e dependencies=lowest -e AWS_SUPPRESS_PHP_DEPRECATION_WARNING=true -v/code/vendor php-composer:$(PHP_VERSION) bash -c 'cd /code && ./project_tests.sh'
 
 
 test-7.1:
