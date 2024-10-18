@@ -19,7 +19,7 @@
         "doctrine/cache": "^1.6",
         "elife/api-sdk": "dev-support-php-8.x",
         "elife/logging-sdk": "dev-support-php-8.x",
-        "jms/serializer": "^1.4",
+        "jms/serializer": "^1.4 || ^3.0",
         "psr/log": "^1.0"
     },
     "require-dev": {
