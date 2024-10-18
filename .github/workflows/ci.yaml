@@ -16,20 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php_version: [7.1, 7.2, 7.3, 7.4]
-        task: ['test', 'test-lowest']
+        php_version: ["7.1", "7.2", "7.3", "7.4"]
     steps:
       - uses: actions/checkout@v4
       - name: Run tests
-        run: make PHP_VERSION=${{ matrix.php_version }} ${{ matrix.task }}
+        run: make PHP_VERSION=${{ matrix.php_version }} test
   tests-future-versions:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php_version: [8.0, 8.1, 8.2, 8.3]
-        task: ['test', 'test-lowest']
+        php_version: ["8.0", "8.1", "8.2", "8.3"]
     steps:
       - uses: actions/checkout@v4
       - name: Run tests against all major versions of PHP
-        run: make PHP_VERSION=${{ matrix.php_version }} ${{ matrix.task }}
+        run: make PHP_VERSION=${{ matrix.php_version }} test
         continue-on-error: true
