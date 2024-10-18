@@ -14,12 +14,12 @@
         }
     },
     "require": {
-        "php": "^7.1",
+        "php": "^7.1 || ^8.0",
         "aws/aws-sdk-php": "^3.238",
         "doctrine/cache": "^1.6",
-        "elife/api-sdk": "^1.0",
-        "elife/logging-sdk": "^1.0",
-        "jms/serializer": "^1.4",
+        "elife/api-sdk": "dev-support-php-8.x",
+        "elife/logging-sdk": "dev-support-php-8.x",
+        "jms/serializer": "^1.4 || ^3.0",
         "psr/log": "^1.0"
     },
     "require-dev": {
