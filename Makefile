@@ -1,14 +1,14 @@
+PROJECT_NAME = bus-sdk-php
 .PHONY: build test clean test
 build:
 	$(if $(PHP_VERSION),,$(error PHP_VERSION make variable needs to be set))
-	docker buildx build --build-arg=PHP_VERSION=$(PHP_VERSION) -t php-composer:$(PHP_VERSION) .
+	docker buildx build --build-arg=PHP_VERSION=$(PHP_VERSION) -t $(PROJECT_NAME):$(PHP_VERSION) .
 
 lint: build
-	docker run --rm -v ./:/code -v/code/vendor php-composer:$(PHP_VERSION) bash -c 'vendor/bin/phpcs --standard=phpcs.xml.dist --warning-severity=0 -p src/ test/'
+	docker run --rm $(PROJECT_NAME):$(PHP_VERSION) bash -c 'vendor/bin/phpcs --standard=phpcs.xml.dist --warning-severity=0 -p src/ test/'
 
 test: build lint
-	docker run --rm -v ./:/code -e AWS_SUPPRESS_PHP_DEPRECATION_WARNING=true -v/code/vendor php-composer:$(PHP_VERSION) bash -c './project_tests.sh'
-
+	docker run --rm -e AWS_SUPPRESS_PHP_DEPRECATION_WARNING=true $(PROJECT_NAME):$(PHP_VERSION) bash -c './project_tests.sh'
 
 test-7.1:
 	@$(MAKE) PHP_VERSION=7.1 test
