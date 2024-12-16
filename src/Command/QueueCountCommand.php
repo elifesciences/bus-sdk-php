@@ -25,8 +25,10 @@ final class QueueCountCommand extends Command
             ->setDescription('Counts the SQS messages, including invisible ones. Approximate.');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln($this->queue->count());
+
+        return 0;
     }
 }

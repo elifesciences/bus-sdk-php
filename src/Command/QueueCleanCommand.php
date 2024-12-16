@@ -28,9 +28,11 @@ final class QueueCleanCommand extends Command
             ->setDescription('Cleans the SQS queue through purging.');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->logger->info('Cleaning queue: '.$this->queue->getName());
         $this->queue->clean();
+
+        return 0;
     }
 }

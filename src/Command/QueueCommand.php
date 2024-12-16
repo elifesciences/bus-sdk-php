@@ -56,13 +56,15 @@ abstract class QueueCommand extends Command
             ->setDescription('Watches SQS for changes.');
     }
 
-    final public function execute(InputInterface $input, OutputInterface $output)
+    final public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->logger->info($this->getName().' Started listening.');
         while (!$this->limit->hasBeenReached()) {
             $this->loop($input);
         }
         $this->logger->info($this->getName().' Stopped because of limits reached.');
+
+        return 0;
     }
 
     final protected function transform(QueueItem $item)
