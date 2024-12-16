@@ -16,7 +16,6 @@
     "require": {
         "php": "^7.1 || ^8.0",
         "aws/aws-sdk-php": "^3.238",
-        "doctrine/cache": "^1.6",
         "elife/api-sdk": "dev-master",
         "elife/logging-sdk": "^1.1",
         "jms/serializer": "^1.4 || ^3.0",
@@ -33,7 +32,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "suggest": {
-        "symfony/console": "^2.7 || ^3.2, to use Command classes"
+        "symfony/console": "^2.7 || ^3.2, to use Command classes",
+        "doctrine/cache": "^1.6 to use CachedTransformer"
     },
     "extra": {
         "branch-alias": {
