@@ -2,7 +2,7 @@ ARG PHP_VERSION=latest
 FROM php:${PHP_VERSION}
 
 RUN apt-get update && apt-get install -y git unzip && rm -rf /var/lib/apt/lists/*
-COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /code
 
