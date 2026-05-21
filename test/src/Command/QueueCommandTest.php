@@ -10,7 +10,6 @@ use eLife\Bus\Queue\InternalSqsMessage;
 use eLife\Bus\Queue\Mock\WatchableQueueMock;
 use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\QueueItemTransformer;
-use eLife\Logging\Monitoring;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -53,7 +52,6 @@ final class QueueCommandTest extends TestCase
             $this->logger,
             $this->queue,
             $this->transformer,
-            new Monitoring(),
             $this->limitIterations(1)
         );
         $this->application->add($this->command);
@@ -86,7 +84,6 @@ final class QueueCommandTest extends TestCase
             $this->logger,
             $this->queue,
             $transformer,
-            new Monitoring(),
             $this->limitIterations(1)
         );
         $this->application->add($command);
@@ -115,7 +112,6 @@ final class QueueCommandTest extends TestCase
             $this->logger,
             $this->queue,
             $transformer,
-            new Monitoring(),
             $this->limitIterations(1)
         );
         $this->application->add($command);
@@ -138,7 +134,6 @@ final class QueueCommandTest extends TestCase
             $this->logger,
             $this->queue,
             $this->transformer,
-            new Monitoring(),
             $this->limitIterations(1)
         );
         $this->application->add($command);

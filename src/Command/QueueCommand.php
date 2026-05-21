@@ -7,7 +7,6 @@ use eLife\Bus\Limit\Limit;
 use eLife\Bus\Queue\QueueItem;
 use eLife\Bus\Queue\QueueItemTransformer;
 use eLife\Bus\Queue\WatchableQueue;
-use eLife\Logging\Monitoring;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,20 +19,17 @@ abstract class QueueCommand extends Command
     protected $queue;
     protected $transformer;
     protected $limit;
-    protected $monitoring;
     private $serializedTransform;
 
     public function __construct(
         LoggerInterface $logger,
         WatchableQueue $queue,
         QueueItemTransformer $transformer,
-        Monitoring $monitoring,
         Limit $limit,
         bool $serializedTransform = true
     ) {
         $this->logger = $logger;
         $this->queue = $queue;
-        $this->monitoring = $monitoring;
         $this->transformer = $transformer;
         $this->limit = $limit;
         $this->serializedTransform = $serializedTransform;
@@ -87,7 +83,6 @@ abstract class QueueCommand extends Command
                     'exception' => $e,
                     'item' => $item,
                 ]);
-                $this->monitoring->recordException($e, "Error in importing {$item->getType()} {$item->getId()}");
                 $this->release($item);
             }
         }
@@ -100,8 +95,6 @@ abstract class QueueCommand extends Command
         $this->logger->debug($this->getName().' Loop start, listening to queue', ['queue' => $this->queue->getName()]);
         $item = $this->queue->dequeue();
         if ($item) {
-            $this->monitoring->startTransaction();
-            $this->monitoring->nameTransaction($this->getName());
             if ($entity = $this->transform($item)) {
                 try {
                     $this->process($input, $item, $entity);
@@ -112,11 +105,9 @@ abstract class QueueCommand extends Command
                         'exception' => $e,
                         'item' => $item,
                     ]);
-                    $this->monitoring->recordException($e, "Error in processing {$item->getType()} {$item->getId()}");
                     $this->release($item);
                 }
             }
-            $this->monitoring->endTransaction();
         }
         $this->logger->debug($this->getName().' End of loop');
     }
@@ -130,7 +121,6 @@ abstract class QueueCommand extends Command
                 'exception' => $e,
                 'item' => $item,
             ]);
-            $this->monitoring->recordException($e, "Error in releasing {$item->getType()} {$item->getId()}");
         }
     }
 }
