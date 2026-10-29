@@ -16,7 +16,7 @@
     "require": {
         "php": "^7.1 || ^8.0",
         "aws/aws-sdk-php": "^3.238",
-        "elife/api-sdk": "dev-master",
+        "elife/api-sdk": "^1.0",
         "elife/logging-sdk": "^1.1",
         "jms/serializer": "^1.4 || ^3.0",
         "psr/log": "^1.0 || ^2.0 || ^3.0"
