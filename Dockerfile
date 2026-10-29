@@ -19,7 +19,7 @@ RUN if [ -f /etc/apt/sources.list ]; then \
 # Valid-Until has already passed - Check-Valid-Until=false stops apt
 # rejecting them as stale. No effect on live (non-snapshot) mirrors.
 RUN apt-get update -o Acquire::Check-Valid-Until=false && apt-get install -y git unzip && rm -rf /var/lib/apt/lists/*
-COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.11 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /code
 
